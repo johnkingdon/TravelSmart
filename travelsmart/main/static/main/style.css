@@ -5,22 +5,20 @@
   padding: 0;
 }
 
-html {
+html, body {
   height: 100%;
   font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, #e6ecf5, #f8fafc);
   color: #333;
-  overflow: hidden; /* Prevent scrollbars */
+  overflow: hidden;
+}
+
+html {
+  background: linear-gradient(135deg, #e6ecf5, #f8fafc);
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
-  overflow: hidden;
   background: url("/static/main/background.png") no-repeat center center fixed;
   background-size: cover;
-  color: #333;
 }
 
 /* ------------------ Navbar ------------------ */
@@ -74,7 +72,17 @@ body {
 
 .auth-buttons {
   display: flex;
+  align-items: center;
   gap: 1rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
 }
 
 .auth-buttons a,
@@ -97,10 +105,15 @@ body {
   transform: translateY(-1px);
 }
 
+.user-name {
+  color: white;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-right: 0.25rem;
+}
+
 /* ------------------ Buttons ------------------ */
-.cta-button,
-.button,
-.btn {
+.btn, .button, .cta-button {
   background: linear-gradient(to right, #4f46e5, #3b82f6);
   color: white;
   padding: 0.75rem 1.5rem;
@@ -114,9 +127,7 @@ body {
   display: inline-block;
 }
 
-.cta-button:hover,
-.button:hover,
-.btn:hover {
+.btn:hover, .button:hover, .cta-button:hover {
   background: linear-gradient(to right, #3b82f6, #2563eb);
   transform: translateY(-2px);
 }
@@ -126,7 +137,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: calc(100vh - 84px); /* Adjusted for taller navbar */
+  height: calc(100vh - 84px);
   padding: 3rem 4rem;
   overflow: hidden;
 }
@@ -177,45 +188,44 @@ footer {
   overflow: hidden;
 }
 
-/* ---------- Auth Page ---------- */
-
-.auth-wrapper {
+/* ---------- Auth Pages ---------- */
+.auth-wrapper, .form-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: calc(100vh - 72px); /* Adjusted for navbar */
+  height: calc(100vh - 72px);
   padding: 2rem;
 }
 
-.auth-card {
+.auth-card, .form-card {
   background: white;
-  padding: 4rem 3rem;
+  padding: 3rem;
   border-radius: 20px;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 560px;
+  max-width: 500px;
   text-align: center;
 }
 
-.auth-title {
-  font-size: 2.5rem;
-  font-weight: 800;
-  margin-bottom: 2.5rem;
+.auth-title, .form-card h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
 }
 
-.auth-field {
+.auth-field, .form-group {
   text-align: left;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
 }
 
-.auth-field label {
+.auth-field label, .form-group label {
   font-weight: 600;
   display: block;
   margin-bottom: 0.5rem;
   font-size: 1rem;
 }
 
-.auth-field input {
+.auth-field input, .form-group input {
   width: 100%;
   padding: 0.9rem 1.1rem;
   border: 1px solid #ccc;
@@ -223,15 +233,22 @@ footer {
   font-size: 1.05rem;
 }
 
-.auth-field input:focus {
+.auth-field input:focus, .form-group input:focus {
   outline: none;
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
+.form-error {
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
 .full-width {
   width: 100%;
-  margin-top: 2rem;
+  display: block;
+  margin-top: 1rem;
   background: linear-gradient(to right, #6366f1, #3b82f6);
   color: white;
   padding: 0.85rem 1rem;
@@ -245,58 +262,4 @@ footer {
 
 .full-width:hover {
   background: linear-gradient(to right, #4f46e5, #2563eb);
-}
-
-.form-container {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: calc(100vh - 72px);
-}
-
-.form-card {
-    background: white;
-    padding: 3rem;
-    border-radius: 20px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 500px;
-    text-align: center;
-}
-
-.form-card h2 {
-    font-size: 1.75rem;
-    margin-bottom: 1.5rem;
-    font-weight: 700;
-}
-
-.form-group {
-    text-align: left;
-    margin-bottom: 1.25rem;
-}
-
-.form-group label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 0.25rem;
-}
-
-.form-group input {
-    width: 100%;
-    padding: 0.6rem 1rem;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    font-size: 1rem;
-}
-
-.form-error {
-    color: #dc2626;
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-}
-
-.full-width {
-    width: 100%;
-    display: block;
-    margin-top: 1rem;
 }
