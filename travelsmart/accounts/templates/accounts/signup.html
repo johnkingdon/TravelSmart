@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-card">
+        <h2>Create Your Account</h2>
+        <form method="POST">
+            {% csrf_token %}
+            {% for field in template_data.form %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% for error in field.errors %}
+                        <div class="form-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="cta-button full-width">Sign Up</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

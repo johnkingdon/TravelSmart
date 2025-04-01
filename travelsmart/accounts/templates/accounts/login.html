@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="form-container">
+    <div class="form-card">
+        <h2>Log In</h2>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            {% for field in template_data.form %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% for error in field.errors %}
+                        <div class="form-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            {% if template_data.form.non_field_errors %}
+                {% for error in template_data.form.non_field_errors %}
+                    <div class="form-error">{{ error }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <button type="submit" class="cta-button full-width">Log In</button>
+        </form>
+
+        <div class="text-sm text-center mt-3">
+            <a href="{% url 'reset_password' %}" class="text-blue-500 hover:underline">Forgot your password?</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

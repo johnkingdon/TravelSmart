@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TravelSmart | Plan Smarter, Travel Better</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'main/style.css' %}">
+</head>
+<body>
+  <div class="page-container">
+    <header>
+      <nav class="navbar">
+        <div class="logo">
+          <img src="{% static 'main/logo.png' %}" alt="TravelSmart Logo">
+          <span class="logo-text">TravelSmart</span>
+        </div>
+        <ul class="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="/itinerary/">Itinerary</a></li>
+          <li><a href="/explore/">Explore</a></li>
+          <li><a href="/chatbot/">Chat</a></li>
+        </ul>
+        <div class="auth-buttons">
+          {% if user.is_authenticated %}
+              <form method="post" action="{% url 'accounts.logout' %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn">Logout</button>
+              </form>
+          {% else %}
+              <a href="{% url 'accounts.login' %}" class="btn">Login</a>
+              <a href="{% url 'accounts.signup' %}" class="btn primary">Create Account</a>
+          {% endif %}
+        </div>
+      </nav>
+    </header>
+
+
+    <main class="content-wrap">
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        &copy; 2025 TravelSmart. All rights reserved.
+    </footer>
+  </div>
+</body>
+</html>
