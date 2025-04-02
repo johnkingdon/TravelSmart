@@ -19,7 +19,7 @@
         <ul class="nav-links">
           <li><a href="/">Home</a></li>
           <li><a href="/itinerary/">Itinerary</a></li>
-          <li><a href="/explore/">Explore</a></li>
+          <li><a href="{% url 'explore' %}">Explore</a></li>
           <li><a href="/chatbot/">Chat</a></li>
         </ul>
 
@@ -50,6 +50,10 @@
     <footer>
       &copy; 2025 TravelSmart. All rights reserved.
     </footer>
+  </div>
+
+  <div id="custom-infobox" class="hidden">
+    <div id="custom-infobox-content"></div>
   </div>
 </body>
 </html>

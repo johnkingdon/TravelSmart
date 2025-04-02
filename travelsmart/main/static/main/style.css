@@ -263,3 +263,10 @@ footer {
 .full-width:hover {
   background: linear-gradient(to right, #4f46e5, #2563eb);
 }
+
+.small-btn {
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  display: inline-block;
+  margin-bottom: 10px;
+}
