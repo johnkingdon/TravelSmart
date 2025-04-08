@@ -5,7 +5,7 @@
   <title>TravelSmart | Plan Smarter, Travel Better</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {% load static %}
-  <link rel="stylesheet" href="{% static 'main/style.css' %}">
+  <link rel="stylesheet" href="{% static 'main/style.css' %}?v=2">
 </head>
 <body>
   <div class="page-container">
@@ -28,6 +28,15 @@
             <div class="user-info">
               <span class="user-name">{{ user.username }}</span>
 
+            <!-- DEBUG: {{ has_unseen_announcements }} -->
+              <!-- 🔔 Bell Icon (Authenticated User) -->
+              <a href="{% url 'announcements' %}" class="nav-icon">
+                <img src="{% static 'main/bell.svg' %}" alt="Announcements" class="bell-icon">
+                {% if has_unseen_announcements %}
+                  <span class="notification-dot"></span>
+                {% endif %}
+              </a>
+
               <a href="{% url 'accounts.settings' %}" class="btn">Account Settings</a>
 
               <form method="post" action="{% url 'accounts.logout' %}">
@@ -36,6 +45,11 @@
               </form>
             </div>
           {% else %}
+            <!-- 🔔 Bell Icon (Unauthenticated User) -->
+            <a href="{% url 'accounts.login' %}" class="nav-icon">
+              <img src="{% static 'main/bell.svg' %}" alt="Announcements" class="bell-icon">
+            </a>
+
             <a href="{% url 'accounts.login' %}" class="btn">Login</a>
             <a href="{% url 'accounts.signup' %}" class="btn primary">Create Account</a>
           {% endif %}

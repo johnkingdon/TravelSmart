@@ -1,16 +1,6 @@
-{% extends 'base.html' %}
-{% load static %}
+{% extends "base.html" %}
 
 {% block content %}
-<div class="hero-wrapper">
-  <div class="hero-text">
-    <h1>Plan Smarter,<br>Travel Better</h1>
-    <p>Discover unforgettable destinations with personalized itineraries and intelligent route planning.</p>
-    <a href="/explore/" class="cta-button">Start Planning</a>
-  </div>
-  <img class="hero-img" src="{% static 'main/hero-image.png' %}" alt="Traveler">
-</div>
-
 <div class="announcements-section">
   <h2 class="announcements-title">Latest Announcements</h2>
   <ul class="announcements-list">
@@ -19,6 +9,13 @@
         <h3>{{ ann.title }}</h3>
         <p>{{ ann.message }}</p>
         <small>Posted on {{ ann.created_at|date:"F j, Y" }}</small>
+
+        {% if user.is_authenticated %}
+        <form method="post" action="{% url 'dismiss_announcement' ann.id %}">
+          {% csrf_token %}
+          <button type="submit" class="btn dismiss-btn">Dismiss</button>
+        </form>
+        {% endif %}
       </li>
     {% empty %}
       <li>No announcements at this time.</li>

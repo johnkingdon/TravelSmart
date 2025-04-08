@@ -270,3 +270,92 @@ footer {
   display: inline-block;
   margin-bottom: 10px;
 }
+
+/* ------------------ Notification Bell & Dot ------------------ */
+.nav-icon {
+  display: inline-block;
+  margin-left: 1rem;
+  position: relative;
+}
+
+.bell-icon {
+  width: 24px;
+  height: 24px;
+  filter: grayscale(20%);
+  transition: transform 0.2s ease;
+  vertical-align: middle;
+}
+
+.bell-icon:hover {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+}
+
+.notification-dot {
+  position: absolute;
+  top: 5px;
+  right: 18px;
+  height: 10px;
+  width: 10px;
+  background-color: red;
+  border-radius: 50%;
+}
+
+/* ------------------ Announcements Section ------------------ */
+.announcements-section {
+  background-color: #f9f9f9;
+  padding: 2rem;
+  margin: 2rem auto;
+  max-width: 800px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.announcements-title {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: #333;
+  text-align: center;
+}
+
+.announcements-list {
+  list-style: none;
+  padding: 0;
+}
+
+.announcement-item {
+  border-bottom: 1px solid #ddd;
+  padding: 1rem 0;
+}
+
+.announcement-item h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.2rem;
+  color: #0077cc;
+}
+
+.announcement-item p {
+  margin: 0 0 0.5rem;
+  color: #555;
+}
+
+.announcement-item small {
+  color: #999;
+}
+
+/* ------------------ Dismiss Button ------------------ */
+.dismiss-btn {
+  margin-top: 0.5rem;
+  background-color: #3b82f6; /* blue-ish button */
+  color: white;              /* white text */
+  padding: 0.3rem 0.75rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.dismiss-btn:hover {
+  background-color: #2563eb; /* darker on hover */
+}
