@@ -61,7 +61,8 @@ function searchPlaces(query, category) {
         position: location,
         title: "Selected Destination",
         icon: {
-          url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+          url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+          scaledSize: new google.maps.Size(45, 45)
         }
       });
 
@@ -153,15 +154,7 @@ function createMarker(place, index = 0) {
     return;
   }
 
-  const infoCard = `
-    <div style="display: flex; align-items: center; padding: 0; margin: 0; font-family: 'Segoe UI', sans-serif; max-width: 300px;">
-      <div style="margin: 0;">
-        <strong>${place.name}</strong><br>
-        ${place.rating ? `⭐ ${place.rating.toFixed(1)}<br>` : ''}
-        ${place.price_level ? `💲 ${place.price_level.toFixed(2)}` : ''}
-      </div>
-    </div>
-  `;
+  const infoCard = generateInfoCard(place);
 
   const marker = new google.maps.Marker({
     map,
@@ -189,6 +182,54 @@ function createMarker(place, index = 0) {
   marker.addListener("click", () => {
     if (place.place_id) showPlaceDetails(place.place_id);
   });
+}
+
+function generateInfoCard(place) {
+  const name = place.name || "Unnamed Place";
+  const rating = place.rating || 0;
+  const ratingCount = place.user_ratings_total || 0;
+  const priceLevel = place.price_level ?? -1;
+  const types = place.types || [];
+  const status = place.business_status || "OPERATIONAL";
+  const category = formatPlaceType(types);
+
+  const photoUrl = place.photos?.[0]?.getUrl({ maxWidth: 150, maxHeight: 100 });
+  const imageHTML = photoUrl
+    ? `<img src="${photoUrl}" alt="Place image" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-right: 12px;">`
+    : '';
+
+  // Build star rating display
+  const fullStars = Math.floor(rating);
+  const halfStar = rating % 1 >= 0.25 && rating % 1 < 0.75;
+  const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+
+  let starsHTML = '';
+  for (let i = 0; i < fullStars; i++) starsHTML += '★';
+  if (halfStar) starsHTML += '☆';
+  for (let i = 0; i < emptyStars; i++) starsHTML += '☆';
+
+  // Build price level display
+  let priceHTML = '';
+  const adjusted = Math.max(1, priceLevel);
+  for (let i = 0; i < 4; i++) {
+    priceHTML += `<span style="color:${i < adjusted ? '#2e7d32' : '#ccc'}">$</span>`;
+  }
+
+  const statusHTML = (status === 'OPERATIONAL')
+    ? `<span style="color:#2e7d32;">🟢 Open now</span>`
+    : `<span style="color:#c62828;">🔴 Closed</span>`;
+
+  return `
+    <div style="display: flex; align-items: center; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0;">
+      ${imageHTML}
+      <div style="line-height: 1.4; font-size: 14px;">
+        <div style="font-weight: 600; font-size: 15px; margin-bottom: 4px;">${name}</div>
+        <div style="font-size: 13px;">${starsHTML} (${rating.toFixed(1)}) · ${ratingCount}</div>
+        <div style="font-size: 13px;">${priceHTML} · ${category}</div>
+        <div style="font-size: 13px; margin-top: 4px;">${statusHTML}</div>
+      </div>
+    </div>
+  `;
 }
 
 function clearPlaceMarkers() {
