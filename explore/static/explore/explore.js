@@ -31,6 +31,13 @@ function initMap(lat = 33.7490, lng = -84.3880) {
   const input = document.getElementById("autocomplete");
   const autocomplete = new google.maps.places.Autocomplete(input);
   autocomplete.bindTo("bounds", map);
+
+  map.addListener("click", (event) => {
+    if (event.placeId) {
+      event.stop(); // Prevent default popup
+      handlePOIClick(event.placeId);
+    }
+  });
 }
 
 function searchPlaces(query, category) {
@@ -345,74 +352,140 @@ function showPlaceDetails(placeId) {
   const service = new google.maps.places.PlacesService(document.createElement('div'));
   service.getDetails({
     placeId,
-    fields: ['name', 'formatted_address', 'rating', 'price_level', 'website', 'photos', 'reviews']
+    fields: ['name', 'formatted_address', 'rating', 'price_level', 'website', 'photos', 'reviews', 'types', 'business_status', 'user_ratings_total']
   }, (place, status) => {
-    if (status === google.maps.places.PlacesServiceStatus.OK) {
-      document.getElementById('modal-title').textContent = place.name || 'Unknown';
-      document.getElementById('modal-address').textContent = place.formatted_address || '';
-      document.getElementById('modal-rating').textContent = place.rating ? `⭐ ${Number(place.rating).toFixed(1)}` : '';
-      document.getElementById('modal-price').textContent = place.price_level != null ? `💲 ${Number(place.price_level).toFixed(2)}` : '';
+    if (status !== google.maps.places.PlacesServiceStatus.OK || !place) return;
 
-      const websiteBtn = document.getElementById('modal-website');
-      if (place.website) {
-        websiteBtn.href = place.website;
-        websiteBtn.innerHTML = 'Visit Website';
-        websiteBtn.classList.add('btn');
-        websiteBtn.style.display = 'inline-block';
-      } else {
-        websiteBtn.href = '#';
-        websiteBtn.innerHTML = '';
-        websiteBtn.style.display = 'none';
-      }
+    // Elements
+    const modal = document.getElementById('place-modal');
+    const backdrop = document.getElementById('modal-backdrop');
+    const titleEl = document.getElementById('modal-title');
+    const addressEl = document.getElementById('modal-address');
+    const ratingEl = document.getElementById('modal-rating');
+    const priceEl = document.getElementById('modal-price');
+    const websiteBtn = document.getElementById('modal-website');
+    const photoImg = document.getElementById('modal-photo-img');
+    const reviewsEl = document.getElementById('modal-reviews');
 
-      photoList = place.photos || [];
-      photoIndex = 0;
+    // Clear duplicate content
+    const existingTypeBlock = document.querySelector('.place-type-block');
+    if (existingTypeBlock) existingTypeBlock.remove();
 
-      function updatePhotoDisplay() {
-        const img = document.getElementById('modal-photo-img');
-        if (photoList.length > 0) {
-          img.src = photoList[photoIndex].getUrl({ maxWidth: 600 });
-          img.style.display = 'block';
-        } else {
-          img.style.display = 'none';
-        }
-      }
+    // ✨ Basic Info
+    titleEl.textContent = place.name || 'Unknown';
+    addressEl.textContent = place.formatted_address || '';
 
-      updatePhotoDisplay();
+    // ✨ Star Rating + Review Count
+    const rating = place.rating || 0;
+    const ratingCount = place.user_ratings_total || 0;
+    const fullStars = Math.floor(rating);
+    const halfStar = rating % 1 >= 0.25 && rating % 1 < 0.75;
+    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
 
-      document.getElementById('prev-photo').onclick = () => {
-        if (photoList.length > 0) {
-          photoIndex = (photoIndex - 1 + photoList.length) % photoList.length;
-          updatePhotoDisplay();
-        }
-      };
+    let starsHTML = '';
+    for (let i = 0; i < fullStars; i++) starsHTML += '<span class="star full">★</span>';
+    if (halfStar) starsHTML += '<span class="star half">★</span>';
+    for (let i = 0; i < emptyStars; i++) starsHTML += '<span class="star empty">★</span>';
+    ratingEl.innerHTML = `
+      <div class="star-rating">
+        <span class="star-number">${rating.toFixed(1)}</span>
+        ${starsHTML}
+        <span class="rating-count">(${ratingCount})</span>
+      </div>
+    `;
 
-      document.getElementById('next-photo').onclick = () => {
-        if (photoList.length > 0) {
-          photoIndex = (photoIndex + 1) % photoList.length;
-          updatePhotoDisplay();
-        }
-      };
-
-      const reviewContainer = document.getElementById('modal-reviews');
-      reviewContainer.innerHTML = '';
-
-      if (place.reviews) {
-        const label = document.createElement('h3');
-        label.textContent = "🗣️ Reviews";
-        label.style.marginTop = '15px';
-        reviewContainer.appendChild(label);
-
-        place.reviews.slice(0, 3).forEach(r => {
-          const p = document.createElement('p');
-          p.innerHTML = `⭐ ${r.rating}: ${r.text}`;
-          reviewContainer.appendChild(p);
-        });
-      }
-
-      document.getElementById('place-modal').classList.remove('hidden');
-      document.getElementById('modal-backdrop').classList.remove('hidden');
+    // 💲 Price Level
+    const priceLevel = place.price_level ?? -1;
+    let priceHTML = '';
+    const adjustedPriceLevel = Math.max(1, priceLevel);
+    for (let i = 0; i < 4; i++) {
+      priceHTML += `<span class="price-sign ${i < adjustedPriceLevel ? 'filled' : 'empty'}">$</span>`;
     }
+    priceEl.innerHTML = priceHTML;
+
+    // 📍 Type (with emoji)
+    const type = formatPlaceType(place.types);
+    const business_status = place.business_status === 'OPERATIONAL' ?
+      '<div class="place-status status-open">🟢 Open now</div>' :
+      '<div class="place-status status-closed">🔴 Closed</div>';
+    const typeBlock = document.createElement('div');
+    typeBlock.className = 'place-type-block';
+    typeBlock.innerHTML = `
+      <div class="details-line" style="margin-top: 8px;">
+        ${business_status}
+        <div class="place-type">${type}</div>
+      </div>
+    `;
+    priceEl.insertAdjacentElement('afterend', typeBlock);
+
+    // 🌐 Website Button
+    if (place.website) {
+      websiteBtn.href = place.website;
+      websiteBtn.textContent = 'Visit Website';
+      websiteBtn.classList.add('btn');
+      websiteBtn.style.display = 'inline-block';
+    } else {
+      websiteBtn.style.display = 'none';
+    }
+
+    // 📷 Photo
+    photoList = place.photos || [];
+    photoIndex = 0;
+    const updatePhotoDisplay = () => {
+      if (photoList.length > 0) {
+        photoImg.src = photoList[photoIndex].getUrl({ maxWidth: 600 });
+        photoImg.style.display = 'block';
+      } else {
+        photoImg.src = 'https://maps.gstatic.com/tactile/basepage/no_photo-1x.png';
+        photoImg.style.display = 'block';
+      }
+    };
+    updatePhotoDisplay();
+
+    document.getElementById('prev-photo').onclick = () => {
+      if (photoList.length > 0) {
+        photoIndex = (photoIndex - 1 + photoList.length) % photoList.length;
+        updatePhotoDisplay();
+      }
+    };
+    document.getElementById('next-photo').onclick = () => {
+      if (photoList.length > 0) {
+        photoIndex = (photoIndex + 1) % photoList.length;
+        updatePhotoDisplay();
+      }
+    };
+
+    // 🗣 Reviews
+    reviewsEl.innerHTML = '';
+    if (place.reviews && place.reviews.length > 0) {
+      const label = document.createElement('h3');
+      label.textContent = '🗣️ Reviews';
+      label.style.margin = '16px 0 8px';
+      reviewsEl.appendChild(label);
+
+      const scrollBox = document.createElement('div');
+      scrollBox.style.maxHeight = '200px';
+      scrollBox.style.overflowY = 'auto';
+
+      place.reviews.forEach(r => {
+        const p = document.createElement('p');
+        p.className = 'review';
+
+        const full = Math.floor(r.rating);
+        const half = r.rating % 1 >= 0.25 && r.rating % 1 < 0.75;
+        let reviewStars = '';
+        for (let i = 0; i < full; i++) reviewStars += '<span class="star full">★</span>';
+        if (half) reviewStars += '<span class="star half">★</span>';
+        for (let i = 0; i < 5 - full - (half ? 1 : 0); i++) reviewStars += '<span class="star empty">★</span>';
+
+        p.innerHTML = `<div class="review-stars">${reviewStars}</div><div class="review-text">${r.text}</div>`;
+        scrollBox.appendChild(p);
+      });
+      reviewsEl.appendChild(scrollBox);
+    }
+
+    modal.classList.remove('hidden');
+    backdrop.classList.remove('hidden');
   });
 }
 
