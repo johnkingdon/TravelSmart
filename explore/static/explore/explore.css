@@ -318,20 +318,11 @@ html, body {
   margin-bottom: 12px;
 }
 
-gmpx-place-autocomplete {
-  display: block;
-  width: 100%;
-  --gmpx-color-surface: #fff;
-  --gmpx-color-on-surface: #111;
-  --gmpx-color-outline: #d1d5db;
-  --gmpx-color-outline-focus: #3b82f6;
-  --gmpx-shape-corner-full: 10px;
-  font-size: 14px;
-  font-family: inherit;
-  border-radius: 10px;
-}
-
-gmpx-place-autocomplete::part(text-field) {
-  padding: 10px 14px;
-  border-radius: 10px;
+.place-result.no-results {
+  text-align: center;
+  font-style: italic;
+  color: #666;
+  padding: 24px 12px;
+  border: 2px dashed #ccc;
+  background-color: #f9f9f9;
 }

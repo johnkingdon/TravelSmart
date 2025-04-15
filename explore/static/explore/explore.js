@@ -105,6 +105,12 @@ function findNearby(location, category) {
 
     const localService = new google.maps.places.PlacesService(map);
     localService.nearbySearch(request, (results, status) => {
+      if (status !== google.maps.places.PlacesServiceStatus.OK || !results || results.length === 0) {
+        console.warn("No nearby places found.");
+        displayResults([]);
+        return;
+      }
+
       completed++;
       if (status === google.maps.places.PlacesServiceStatus.OK) {
         allResults.push(...results);
@@ -174,7 +180,7 @@ function createMarker(place, index = 0) {
       marker.setOpacity(opacity);
       if (opacity >= 1) clearInterval(interval);
     }, 16); // 60fps fade-in
-  }, index * 500); // staggered delay
+  }, index * 10); // staggered delay
 
   const infowindow = new google.maps.InfoWindow({ content: infoCard });
 
@@ -194,6 +200,19 @@ function displayResults(results) {
   const resultsDiv = document.getElementById("results");
   resultsDiv.innerHTML = "";
 
+  if (!results || results.length === 0) {
+    const noResults = document.createElement("div");
+    noResults.className = "place-result no-results";
+    noResults.innerHTML = `
+      <div class="place-title">No results found</div>
+      <div style="font-size: 14px; color: #666; margin-top: 4px;">
+        Try adjusting the destination or category.
+      </div>
+    `;
+    resultsDiv.appendChild(noResults);
+    return;
+  }
+
   results.forEach(place => {
     const el = document.createElement("div");
     el.className = "place-result";
@@ -204,7 +223,6 @@ function displayResults(results) {
     const types = place.types || [];
     const businessStatus = place.business_status || "OPERATIONAL";
 
-    // Build star display
     const fullStars = Math.floor(rating);
     const halfStar = rating % 1 >= 0.25 && rating % 1 < 0.75;
     const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
@@ -214,18 +232,14 @@ function displayResults(results) {
     if (halfStar) starsHTML += '<span class="star half">★</span>';
     for (let i = 0; i < emptyStars; i++) starsHTML += '<span class="star empty">★</span>';
 
-    // Build price level display
     let priceHTML = '';
     const adjustedPriceLevel = Math.max(1, priceLevel);
-
     for (let i = 0; i < 4; i++) {
       priceHTML += `<span class="price-sign ${i < adjustedPriceLevel ? 'filled' : 'empty'}">$</span>`;
     }
 
-    // Get readable type
     const readableType = formatPlaceType(types);
 
-    // Business status (only show if not OPERATIONAL)
     let statusHTML = '';
     if (businessStatus !== 'OPERATIONAL') {
       const statusMap = {
