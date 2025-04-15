@@ -8,10 +8,20 @@
       <h1 class="hero-heading">Explore<br>Destinations</h1>
     </a>
   </div>
-  <div class="hero-image-container">
-    <img class="hero-img" src="{% static 'main/venice.jpeg' %}" alt="Traveler">
+
+    <div class="hero-image-container">
+      <div class="collage">
+        <img src="{% static 'main/venice.jpeg' %}" class="collage-img active">
+        <img src="{% static 'main/paris.jpeg' %}" class="collage-img">
+        <img src="{% static 'main/tokyo.jpeg' %}" class="collage-img">
+        <img src="{% static 'main/newyork.jpeg' %}" class="collage-img">
+        <div class="fade-overlay"></div> <!-- ⬅️ Moved inside .collage -->
+      </div>
+    </div>
+    <div class="fade-overlay"></div>
   </div>
 </div>
+
 
 <div class="announcements-section">
   <h2 class="announcements-title">Latest Announcements</h2>
@@ -27,4 +37,8 @@
     {% endfor %}
   </ul>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'main/collage.js' %}"></script>
 {% endblock %}

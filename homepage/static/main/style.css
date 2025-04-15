@@ -147,7 +147,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-left: 2rem;
+  padding-left: 0.5rem;
   z-index: 2;
   background: white;
 }
@@ -165,7 +165,7 @@ html, body {
 }
 
 .hero-heading-link:hover .hero-heading {
-  transform: scale(1.1);
+  transform: scale(1.2);
 }
 
 .hero-image-container {
@@ -187,18 +187,36 @@ html, body {
   z-index: 1;
 }
 
-/* FADE on left side of image */
-.hero-image-container::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
+/*!* FADE on left side of image *!*/
+/*.hero-image-container::before {*/
+/*  content: "";*/
+/*  position: absolute;*/
+/*  left: 0;*/
+/*  top: 0;*/
+/*  height: 100%;*/
+/*  width: 200px; !* adjust width for fade depth *!*/
+/*  background: linear-gradient(to right, white, rgba(255, 255, 255, 0));*/
+/*  z-index: 2;*/
+/*  pointer-events: none;*/
+/*}*/
+
+.collage {
+  position: relative;
   height: 100%;
-  width: 200px; /* adjust width for fade depth */
-  background: linear-gradient(to right, white, rgba(255, 255, 255, 0));
-  z-index: 2;
-  pointer-events: none;
+  width: 100%;
 }
+
+/*.fade-overlay {*/
+/*  position: absolute;*/
+/*  top: 0;*/
+/*  left: 35%; !* This is where the image starts *!*/
+/*  height: 100%;*/
+/*  width: 150px; !* how far it fades into the image *!*/
+/*  background: linear-gradient(to right, white, rgba(255, 255, 255, 0));*/
+/*  z-index: 3;*/
+/*  pointer-events: none;*/
+/*}*/
+
 
 /* ------------------ Structure Containers ------------------ */
 .page-container {
@@ -384,3 +402,28 @@ html, body {
 .dismiss-btn:hover {
   background-color: #2563eb; /* darker on hover */
 }
+
+/* ------------------ Collage ------------------ */
+.collage {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+.collage-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: auto;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1.5s ease-in-out;
+  z-index: 1;
+}
+
+.collage-img.active {
+  opacity: 1;
+  z-index: 2;
+}
+
