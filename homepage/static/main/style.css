@@ -142,22 +142,25 @@ html, body {
   overflow: hidden;
 }
 
-.hero-text {
-  max-width: 600px;
-  z-index: 2;
+.hero-heading {
+  font-size: 3rem;
+  text-align: left;
+  transition: transform 0.3s ease;
+  padding-left: 6rem;
 }
 
-.hero-text h1 {
-  font-size: 3.5rem;
-  line-height: 1.2;
-  font-weight: 800;
-  margin-bottom: 1rem;
+.hero-heading:hover {
+  transform: scale(1.1);
 }
 
-.hero-text p {
-  font-size: 1.2rem;
-  color: #555;
-  margin-bottom: 2rem;
+.hero-heading-link {
+  text-decoration: none;
+  color: inherit;
+  display: inline-block;
+}
+
+.hero-heading-link:hover .hero-heading {
+  transform: scale(1.1);
 }
 
 .hero-img {

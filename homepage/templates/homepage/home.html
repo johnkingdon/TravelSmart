@@ -4,9 +4,9 @@
 {% block content %}
 <div class="hero-wrapper">
   <div class="hero-text">
-    <h1>Plan Smarter,<br>Travel Better</h1>
-    <p>Discover unforgettable destinations with personalized itineraries and intelligent route planning.</p>
-    <a href="/explore/" class="cta-button">Start Planning</a>
+    <a href="{% url 'explore' %}" class="hero-heading-link">
+      <h1 class="hero-heading">Explore<br>Destinations</h1>
+    </a>
   </div>
   <img class="hero-img" src="{% static 'main/hero-image.png' %}" alt="Traveler">
 </div>
