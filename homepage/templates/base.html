@@ -24,7 +24,7 @@
             <!-- DEBUG: {{ has_unseen_announcements }} -->
               <!-- 🔔 Bell Icon (Authenticated User) -->
               <a href="{% url 'announcements' %}" class="nav-icon">
-                <img src="{% static 'main/bell.svg' %}" alt="Announcements" class="bell-icon">
+                <img src="{% static 'main/bell.png' %}" alt="Announcements" class="bell-icon">
                 {% if has_unseen_announcements %}
                   <span class="notification-dot"></span>
                 {% endif %}
@@ -40,7 +40,7 @@
           {% else %}
             <!-- 🔔 Bell Icon (Unauthenticated User) -->
             <a href="{% url 'accounts.login' %}" class="nav-icon">
-              <img src="{% static 'main/bell.svg' %}" alt="Announcements" class="bell-icon">
+              <img src="{% static 'main/bell.png' %}" alt="Announcements" class="bell-icon">
             </a>
 
             <a href="{% url 'accounts.login' %}" class="btn">Login</a>
