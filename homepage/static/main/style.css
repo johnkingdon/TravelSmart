@@ -10,6 +10,7 @@ html, body {
   font-family: 'Segoe UI', sans-serif;
   color: #333;
   overflow: hidden;
+  background: white;
 }
 
 /* ------------------ Navbar ------------------ */
@@ -134,11 +135,11 @@ html, body {
 
 /* ------------------ Hero Section ------------------ */
 .hero-wrapper {
+  position: relative;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: calc(100vh - 84px);
-  padding: 3rem 4rem;
+  align-items: stretch;
+  height: calc(100vh - 84px); /* Adjust if your navbar height is different */
+  background: white;
   overflow: hidden;
 }
 
@@ -164,10 +165,33 @@ html, body {
 }
 
 .hero-img {
-  max-height: 90%;
-  max-width: 50vw;
-  object-fit: contain;
+  height: 100%;
+  width: auto;
+  object-fit: cover;
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 0;
+}
+
+.hero-wrapper::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 30%;
+  background: linear-gradient(to right, white, rgba(255, 255, 255, 0));
   z-index: 1;
+}
+
+.hero-text {
+  position: relative;
+  z-index: 2;
+  padding: 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 /* ------------------ Structure Containers ------------------ */
