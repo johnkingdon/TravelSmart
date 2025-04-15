@@ -12,15 +12,6 @@ html, body {
   overflow: hidden;
 }
 
-html {
-  background: linear-gradient(135deg, #e6ecf5, #f8fafc);
-}
-
-body {
-  background: url("/static/main/background.png") no-repeat center center fixed;
-  background-size: cover;
-}
-
 /* ------------------ Navbar ------------------ */
 .navbar {
   display: flex;
@@ -37,6 +28,20 @@ body {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.logo:hover {
+  text-decoration: none;
+  color: inherit;
+}
+
+.logo-text {
+  font-weight: bold;
+  font-size: 1.4rem;
+  color: inherit;
+  text-decoration: none;
 }
 
 .logo img {
@@ -44,31 +49,26 @@ body {
   width: 36px;
 }
 
-.logo-text {
-  font-weight: bold;
-  font-size: 1.4rem;
-}
+/*.nav-links {*/
+/*  list-style: none;*/
+/*  display: flex;*/
+/*  gap: 1.25rem;*/
+/*}*/
 
-.nav-links {
-  list-style: none;
-  display: flex;
-  gap: 1.25rem;
-}
+/*.nav-links a {*/
+/*  background: linear-gradient(to right, #4f46e5, #3b82f6);*/
+/*  color: white;*/
+/*  text-decoration: none;*/
+/*  font-weight: 600;*/
+/*  padding: 0.5rem 1.25rem;*/
+/*  border-radius: 999px;*/
+/*  transition: background 0.3s ease, transform 0.2s ease;*/
+/*}*/
 
-.nav-links a {
-  background: linear-gradient(to right, #4f46e5, #3b82f6);
-  color: white;
-  text-decoration: none;
-  font-weight: 600;
-  padding: 0.5rem 1.25rem;
-  border-radius: 999px;
-  transition: background 0.3s ease, transform 0.2s ease;
-}
-
-.nav-links a:hover {
-  background: linear-gradient(to right, #3b82f6, #2563eb);
-  transform: translateY(-1px);
-}
+/*.nav-links a:hover {*/
+/*  background: linear-gradient(to right, #3b82f6, #2563eb);*/
+/*  transform: translateY(-1px);*/
+/*}*/
 
 .auth-buttons {
   display: flex;
