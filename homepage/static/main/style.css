@@ -147,7 +147,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-left: 4rem;
+  padding-left: 2rem;
   z-index: 2;
   background: white;
 }
