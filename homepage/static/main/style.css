@@ -170,14 +170,6 @@ html, body {
   z-index: 1;
 }
 
-/* ------------------ Footer ------------------ */
-footer {
-  text-align: center;
-  padding: 1rem;
-  font-size: 0.9rem;
-  color: #666;
-}
-
 /* ------------------ Structure Containers ------------------ */
 .page-container {
   display: flex;
