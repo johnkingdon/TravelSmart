@@ -7,6 +7,12 @@ let photoIndex = 0;
 let photoList = [];
 
 function initMap(lat = 33.7490, lng = -84.3880) {
+  const mapContainer = document.getElementById("map");
+  if (!mapContainer) {
+    console.warn("Map container not found. Delaying init...");
+    return;
+  }
+
   const defaultLocation = new google.maps.LatLng(lat, lng);
   map = new google.maps.Map(document.getElementById("map"), {
     center: defaultLocation,
@@ -28,11 +34,19 @@ function initMap(lat = 33.7490, lng = -84.3880) {
 }
 
 function searchPlaces(query, category) {
+  const input = document.getElementById("autocomplete");
+  const destination = input ? input.value : "";
+
+  if (!destination || destination.trim() === "") {
+    alert("Please enter a destination.");
+    return;
+  }
+
   if (destinationMarker) destinationMarker.setMap(null);
   clearPlaceMarkers();
 
   const request = {
-    query,
+    query: destination,
     fields: ["geometry"],
   };
 
@@ -61,37 +75,80 @@ function searchPlaces(query, category) {
 function findNearby(location, category) {
   const categoryMap = {
     food: 'restaurant',
-    culture: 'museum',
+    cafes: 'cafe',
+    nightlife: 'bar',
     shopping: 'shopping_mall',
-    adventure: 'amusement_park'
+    museums: 'museum',
+    parks: 'park',
+    art: 'art_gallery',
+    hotels: 'lodging',
+    attractions: 'tourist_attraction',
+    religion: 'church',
+    entertainment: 'movie_theater'
   };
 
-  const request = {
-    location,
-    radius: 2000,
-    type: categoryMap[category] || undefined,
-  };
+  clearPlaceMarkers();
 
-  service = new google.maps.places.PlacesService(map);
-  service.nearbySearch(request, function (results, status) {
-    if (status === google.maps.places.PlacesServiceStatus.OK) {
-      displayResults(results);
-      results.forEach(place => createMarker(place));
-    } else {
-      console.error("Nearby search failed: ", status);
-    }
+  const typesToSearch = category
+    ? [categoryMap[category]]
+    : ['restaurant', 'cafe', 'park', 'museum', 'art_gallery', 'shopping_mall', 'lodging', 'tourist_attraction', 'church', 'movie_theater'];
+
+  const allResults = [];
+  let completed = 0;
+
+  typesToSearch.forEach(type => {
+    const request = {
+      location,
+      radius: 2000,
+      type
+    };
+
+    const localService = new google.maps.places.PlacesService(map);
+    localService.nearbySearch(request, (results, status) => {
+      completed++;
+      if (status === google.maps.places.PlacesServiceStatus.OK) {
+        allResults.push(...results);
+      }
+
+      // When all requests are done
+      if (completed === typesToSearch.length) {
+        const unique = deduplicatePlaces(allResults);
+
+        // Optionally shuffle or limit
+        const sampled = shuffle(unique).slice(0, 20); // Max 20 mixed results
+
+        displayResults(sampled);
+        sampled.forEach((place, i) => createMarker(place, i));
+      }
+    });
   });
 }
 
-function createMarker(place) {
-  if (!place.geometry || !place.geometry.location) return;
+function deduplicatePlaces(places) {
+  const seen = new Set();
+  return places.filter(p => {
+    if (!p.place_id || seen.has(p.place_id)) return false;
+    seen.add(p.place_id);
+    return true;
+  });
+}
 
-  const hasPhoto = place.photos && place.photos.length > 0;
-  const photoUrl = hasPhoto ? place.photos[0].getUrl({ maxWidth: 200 }) : '';
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+function createMarker(place, index = 0) {
+  if (!place.geometry || !place.geometry.location) {
+    console.warn(`Skipping place without geometry: ${place.name}`);
+    return;
+  }
 
   const infoCard = `
     <div style="display: flex; align-items: center; padding: 0; margin: 0; font-family: 'Segoe UI', sans-serif; max-width: 300px;">
-      ${hasPhoto ? `<img src="${photoUrl}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; margin-right: 10px;">` : ''}
       <div style="margin: 0;">
         <strong>${place.name}</strong><br>
         ${place.rating ? `⭐ ${place.rating.toFixed(1)}<br>` : ''}
@@ -104,19 +161,27 @@ function createMarker(place) {
     map,
     position: place.geometry.location,
     title: place.name,
+    opacity: 0 // start hidden
   });
 
   placeMarkers.push(marker);
+
+  // Animate pulse-in using opacity only (avoids icon errors)
+  setTimeout(() => {
+    let opacity = 0;
+    const interval = setInterval(() => {
+      opacity += 0.1;
+      marker.setOpacity(opacity);
+      if (opacity >= 1) clearInterval(interval);
+    }, 16); // 60fps fade-in
+  }, index * 500); // staggered delay
 
   const infowindow = new google.maps.InfoWindow({ content: infoCard });
 
   marker.addListener("mouseover", () => infowindow.open(map, marker));
   marker.addListener("mouseout", () => infowindow.close());
-
   marker.addListener("click", () => {
-    if (place.place_id) {
-      showPlaceDetails(place.place_id);
-    }
+    if (place.place_id) showPlaceDetails(place.place_id);
   });
 }
 
@@ -132,16 +197,93 @@ function displayResults(results) {
   results.forEach(place => {
     const el = document.createElement("div");
     el.className = "place-result";
+
+    const rating = place.rating || 0;
+    const ratingCount = place.user_ratings_total || 0;
+    const priceLevel = place.price_level ?? -1;
+    const types = place.types || [];
+    const businessStatus = place.business_status || "OPERATIONAL";
+
+    // Build star display
+    const fullStars = Math.floor(rating);
+    const halfStar = rating % 1 >= 0.25 && rating % 1 < 0.75;
+    const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+
+    let starsHTML = '';
+    for (let i = 0; i < fullStars; i++) starsHTML += '<span class="star full">★</span>';
+    if (halfStar) starsHTML += '<span class="star half">★</span>';
+    for (let i = 0; i < emptyStars; i++) starsHTML += '<span class="star empty">★</span>';
+
+    // Build price level display
+    let priceHTML = '';
+    const adjustedPriceLevel = Math.max(1, priceLevel);
+
+    for (let i = 0; i < 4; i++) {
+      priceHTML += `<span class="price-sign ${i < adjustedPriceLevel ? 'filled' : 'empty'}">$</span>`;
+    }
+
+    // Get readable type
+    const readableType = formatPlaceType(types);
+
+    // Business status (only show if not OPERATIONAL)
+    let statusHTML = '';
+    if (businessStatus !== 'OPERATIONAL') {
+      const statusMap = {
+        'CLOSED_TEMPORARILY': 'Temporarily Closed',
+        'CLOSED_PERMANENTLY': 'Permanently Closed'
+      };
+      statusHTML = `<div class="place-status status-${businessStatus.toLowerCase()}">🔴 ${statusMap[businessStatus] || 'Closed'}</div>`;
+    } else {
+      statusHTML = `<div class="place-status status-open">🟢 Open now</div>`;
+    }
+
     el.innerHTML = `
-      <strong>${place.name}</strong><br>
-      ${place.rating ? `⭐ ${place.rating.toFixed(1)}<br>` : ''}
-      ${place.price_level ? `💲 ${place.price_level.toFixed(2)}<br>` : ''}
+      <div class="place-title">${place.name}</div>
+      <div class="star-rating">
+        <span class="star-number">${rating.toFixed(1)}</span>
+        ${starsHTML}
+        <span class="rating-count">(${ratingCount})</span>
+      </div>
+      <div class="details-line">
+        <span class="price-group">${priceHTML}</span>
+        <span class="separator">|</span>
+        <span class="place-type">${readableType}</span>
+      </div>
+      ${statusHTML}
     `;
+
     el.addEventListener("click", () => {
       if (place.place_id) showPlaceDetails(place.place_id);
     });
+
     resultsDiv.appendChild(el);
   });
+}
+
+function formatPlaceType(types) {
+  if (!types || types.length === 0) return 'Unknown';
+  const type = types.find(t =>
+    ['restaurant', 'museum', 'park', 'bar', 'cafe', 'zoo', 'art_gallery', 'amusement_park',
+      'shopping_mall', 'lodging', 'tourist_attraction', 'church', 'movie_theater'].includes(t)
+  ) || types[0];
+
+  const emojiMap = {
+    restaurant: '🍽️ Restaurant',
+    museum: '🏛️ Museum',
+    park: '🌳 Park',
+    bar: '🍸 Bar',
+    cafe: '☕ Cafe',
+    zoo: '🦁 Zoo',
+    art_gallery: '🖼️ Art Gallery',
+    amusement_park: '🎢 Amusement Park',
+    shopping_mall: '🛍️ Shopping',
+    lodging: '🛏️ Hotel',
+    tourist_attraction: '📸 Tourist Spot',
+    church: '⛪ Church',
+    movie_theater: '🎬 Movie Theater'
+  };
+
+  return emojiMap[type] || type.replace(/_/g, ' ');
 }
 
 function showPlaceDetails(placeId) {
@@ -151,10 +293,10 @@ function showPlaceDetails(placeId) {
     fields: ['name', 'formatted_address', 'rating', 'price_level', 'website', 'photos', 'reviews']
   }, (place, status) => {
     if (status === google.maps.places.PlacesServiceStatus.OK) {
-      document.getElementById('modal-title').textContent = place.name;
-      document.getElementById('modal-address').textContent = place.formatted_address;
+      document.getElementById('modal-title').textContent = place.name || 'Unknown';
+      document.getElementById('modal-address').textContent = place.formatted_address || '';
       document.getElementById('modal-rating').textContent = place.rating ? `⭐ ${Number(place.rating).toFixed(1)}` : '';
-      document.getElementById('modal-price').textContent = place.price_level ? `💲 ${Number(place.price_level).toFixed(2)}` : '';
+      document.getElementById('modal-price').textContent = place.price_level != null ? `💲 ${Number(place.price_level).toFixed(2)}` : '';
 
       const websiteBtn = document.getElementById('modal-website');
       if (place.website) {
@@ -229,3 +371,11 @@ document.getElementById('close-modal').addEventListener('click', () => {
 });
 
 window.initMap = initMap;
+
+// Safety fallback: retry map init after short delay if map didn't load
+setTimeout(() => {
+  if (!map || typeof map.getCenter !== 'function') {
+    console.warn("Map failed to initialize. Retrying...");
+    initMap();
+  }
+}, 500); // Try after 1.5 seconds

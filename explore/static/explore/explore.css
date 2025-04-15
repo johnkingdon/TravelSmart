@@ -9,6 +9,7 @@ html, body {
   display: flex;
   height: 100vh;
   overflow: hidden;
+  overflow-y: auto;
 }
 
 .sidebar {
@@ -206,4 +207,131 @@ html, body {
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 9998;
   cursor: pointer;
+}
+
+.place-result {
+  padding: 12px;
+  border-radius: 12px;
+  background: #fff;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.place-result:hover {
+  transform: scale(1.01);
+}
+
+.place-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #222;
+  margin-bottom: 4px;
+}
+
+.star-rating {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-top: 2px;
+  font-size: 16px;
+}
+
+.star-number {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.star {
+  font-size: 16px;
+}
+
+.star.full {
+  color: #fbc02d;
+}
+
+.star.half {
+  background: linear-gradient(to right, #fbc02d 50%, #ddd 50%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.star.empty {
+  color: #ddd;
+}
+
+.rating-count {
+  font-size: 13px;
+  color: #777;
+}
+
+.details-line {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  font-size: 14px;
+  color: #444;
+}
+
+.price-sign {
+  font-size: 15px;
+  margin-right: 1px;
+}
+
+.price-sign.filled {
+  color: #2e7d32; /* green */
+}
+
+.price-sign.empty {
+  color: #ccc;
+}
+
+.separator {
+  color: #aaa;
+}
+
+.place-status {
+  margin-top: 6px;
+  font-size: 14px;
+}
+
+.status-open {
+  color: #2e7d32;
+}
+
+.status-closed_temporarily,
+.status-closed_permanently {
+  color: #c62828;
+}
+
+.results-scroll {
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.autocomplete-wrapper {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+gmpx-place-autocomplete {
+  display: block;
+  width: 100%;
+  --gmpx-color-surface: #fff;
+  --gmpx-color-on-surface: #111;
+  --gmpx-color-outline: #d1d5db;
+  --gmpx-color-outline-focus: #3b82f6;
+  --gmpx-shape-corner-full: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  border-radius: 10px;
+}
+
+gmpx-place-autocomplete::part(text-field) {
+  padding: 10px 14px;
+  border-radius: 10px;
 }
