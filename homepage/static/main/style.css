@@ -137,61 +137,67 @@ html, body {
 .hero-wrapper {
   position: relative;
   display: flex;
-  align-items: stretch;
-  height: calc(100vh - 84px); /* Adjust if your navbar height is different */
+  height: calc(100vh - 84px); /* navbar offset */
   background: white;
   overflow: hidden;
+}
+
+.hero-text {
+  flex: 0.7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 4rem;
+  z-index: 2;
+  background: white;
 }
 
 .hero-heading {
   font-size: 3rem;
   text-align: left;
   transition: transform 0.3s ease;
-  padding-left: 6rem;
-}
-
-.hero-heading:hover {
-  transform: scale(1.1);
+  line-height: 1.2;
 }
 
 .hero-heading-link {
   text-decoration: none;
   color: inherit;
-  display: inline-block;
 }
 
 .hero-heading-link:hover .hero-heading {
   transform: scale(1.1);
 }
 
+.hero-image-container {
+  position: relative;
+  flex: 1.3;
+  display: flex;
+  justify-content: flex-end;
+  align-items: stretch;
+  height: 100%;
+  overflow: hidden;
+}
+
 .hero-img {
   height: 100%;
   width: auto;
   object-fit: cover;
-  position: absolute;
-  right: 0;
-  top: 0;
-  z-index: 0;
+  display: block;
+  position: relative;
+  z-index: 1;
 }
 
-.hero-wrapper::before {
+/* FADE on left side of image */
+.hero-image-container::before {
   content: "";
   position: absolute;
   left: 0;
   top: 0;
   height: 100%;
-  width: 30%;
+  width: 200px; /* adjust width for fade depth */
   background: linear-gradient(to right, white, rgba(255, 255, 255, 0));
-  z-index: 1;
-}
-
-.hero-text {
-  position: relative;
   z-index: 2;
-  padding: 3rem 2rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  pointer-events: none;
 }
 
 /* ------------------ Structure Containers ------------------ */
