@@ -1,50 +1,123 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% load static %}
-{% block content %}
 
+{% block content %}
 <link rel="stylesheet" href="{% static 'explore/explore.css' %}">
 
 <div class="explore-container">
   <div class="sidebar">
-      <h2 class="sidebar-title">Explore Attractions</h2>
-      <form id="explore-form">
-        <input type="text" id="autocomplete" name="destination" class="explore-input" placeholder="Enter a destination...">
-        <select name="category">
-          <option value="">All Categories</option>
-          <option value="food">Food</option>
-          <option value="culture">Culture</option>
-          <option value="shopping">Shopping</option>
-          <option value="adventure">Adventure</option>
-        </select>
-        <button type="submit" class="btn">Search</button>
-      </form>
-      <div id="results" class="results-scroll"></div>
+    <h2 class="sidebar-title">Explore Attractions</h2>
+    <form id="explore-form">
+      {% csrf_token %}
+      <input type="text" id="autocomplete" name="destination" class="explore-input" placeholder="Enter a destination...">
+      <select id="category" name="category">
+        <option value="">All Categories</option>
+        <option value="restaurant">Food</option>
+        <option value="museum">Culture</option>
+        <option value="shopping_mall">Shopping</option>
+        <option value="amusement_park">Adventure</option>
+      </select>
+      <button type="submit" class="btn">Search</button>
+    </form>
+
+    <ul id="results-list" class="results-scroll">
+      <li class="placeholder">No results yet. Enter a destination and hit Search.</li>
+    </ul>
   </div>
 
-  <div id="map" class="explore-map"></div>
-
-  <div id="modal-backdrop" class="hidden"></div>
-
-  <div id="place-modal" class="modal hidden">
-    <div class="modal-content">
-      <span id="close-modal" class="close">&times;</span>
-      <h2 id="modal-title"></h2>
-      <p id="modal-address"></p>
-      <p id="modal-rating"></p>
-      <p id="modal-price"></p>
-      <a id="modal-website" href="#" target="_blank" class="btn btn-visit hidden">Visit Website</a>
-      <div id="modal-photos">
-        <img id="modal-photo-img" src="" alt="Place photo" style="border-radius: 12px; width: 100%; max-width: 500px; display: none;">
-        <div class="photo-nav">
-          <button id="prev-photo" class="btn">Previous</button>
-          <button id="next-photo" class="btn">Next</button>
-        </div>
-      </div>
-      <div id="modal-reviews"></div>
-    </div>
+  <div class="itinerary-panel">
+    <h2>Your Itinerary</h2>
+    <ul id="itinerary-list">
+      {% for a in itinerary %}
+        <li data-id="{{ a.place_id }}">{{ a.name }}</li>
+      {% empty %}
+        <li>Your itinerary is empty.</li>
+      {% endfor %}
+    </ul>
   </div>
 </div>
 
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDF4ATm4jiTrHA8uB8b5AG9Q-84OsOzoBU&libraries=places&callback=initMap"></script>
-<script src="{% static 'explore/explore.js' %}"></script>
+<!-- Sortable.js -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
+<!-- Google Maps JS API with Places & callback -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDF4ATm4jiTrHA8uB8b5AG9Q-84OsOzoBU&libraries=places&callback=initMap" async defer></script>
+<script>
+  function initMap() {
+    const inputEl = document.getElementById('autocomplete');
+    const autocomplete = new google.maps.places.Autocomplete(inputEl, { types: ['(cities)'] });
+    autocomplete.setFields(['geometry', 'name']);
+
+    const service = new google.maps.places.PlacesService(document.createElement('div'));
+    const geocoder = new google.maps.Geocoder();
+    const form = document.getElementById('explore-form');
+    const resultsList = document.getElementById('results-list');
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      resultsList.innerHTML = '';
+      const rawInput = inputEl.value.trim();
+      const category = document.getElementById('category').value;
+
+      // Try Place Autocomplete first
+      const place = autocomplete.getPlace();
+      if (place && place.geometry) {
+        searchNearby(place.geometry.location, category);
+      } else {
+        // Geocode free‑form input
+        geocoder.geocode({ address: rawInput }, function(geoResults, geoStatus) {
+          if (geoStatus === google.maps.GeocoderStatus.OK && geoResults[0]) {
+            searchNearby(geoResults[0].geometry.location, category);
+          } else {
+            // Fallback to textSearch
+            const query = (category ? category.replace('_', ' ') + ' in ' : '') + rawInput;
+            service.textSearch({ query: query }, handleResults);
+          }
+        });
+      }
+    });
+
+    function searchNearby(location, category) {
+      const req = { location: location, radius: 5000 };
+      if (category) req.type = category;
+      service.nearbySearch(req, handleResults);
+    }
+
+    function handleResults(results, status) {
+      if (status === google.maps.places.PlacesServiceStatus.OK && results.length) {
+        resultsList.innerHTML = results
+          .map(r => `<li data-id="${r.place_id}">${r.name}</li>`)
+          .join('');
+      } else {
+        resultsList.innerHTML = '<li>No places found.</li>';
+      }
+    }
+
+    // Drag-and-drop initialization
+    Sortable.create(resultsList, { group: 'shared', animation: 150 });
+    Sortable.create(document.getElementById('itinerary-list'), {
+      group: 'shared', animation: 150,
+      onAdd: function(evt) {
+        const placeId = evt.item.dataset.id;
+        const name = evt.item.textContent;
+        fetch("{% url 'add-to-itinerary' %}", {
+          method: 'POST', credentials: 'same-origin',
+          headers: { 'X-CSRFToken': csrftoken, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ place_id: placeId, name: name }),
+        });
+      },
+      onRemove: function(evt) {
+        const placeId = evt.item.dataset.id;
+        fetch("{% url 'remove-from-itinerary' %}", {
+          method: 'POST', credentials: 'same-origin',
+          headers: { 'X-CSRFToken': csrftoken, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ place_id: placeId }),
+        });
+      }
+    });
+  }
+</script>
 {% endblock %}
+
+{#<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDF4ATm4jiTrHA8uB8b5AG9Q-84OsOzoBU&libraries=places&callback=initMap" async defer></script>#}
+{#{% endblock %}#}

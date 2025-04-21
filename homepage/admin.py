@@ -1,5 +1,7 @@
 from django.contrib import admin
 from .models import Announcement
+from .models import Attraction
+
 
 @admin.register(Announcement)
 class AnnouncementAdmin(admin.ModelAdmin):
@@ -13,3 +15,8 @@ class AnnouncementAdmin(admin.ModelAdmin):
     @admin.action(description="Hide selected announcements")
     def hide_selected(self, request, queryset):
         queryset.update(is_active=False)
+
+@admin.register(Attraction)
+class AttractionAdmin(admin.ModelAdmin):
+    list_display = ("name", "category")
+    search_fields = ("name",)
