@@ -60,23 +60,44 @@ function searchPlaces(query, category) {
 
 function findNearby(location, category) {
   const categoryMap = {
+    lodging: 'lodging',
     food: 'restaurant',
     culture: 'museum',
     shopping: 'shopping_mall',
     adventure: 'amusement_park'
   };
 
+
   const request = {
     location,
     radius: 2000,
-    type: categoryMap[category] || undefined,
   };
 
+  if (category && category !== "all") {
+    const mappedType = categoryMap[category];
+    if (mappedType) {
+      request.type = mappedType;
+    }
+  }
+
+
+
   service = new google.maps.places.PlacesService(map);
+  console.log("Nearby Search Request:", request);
   service.nearbySearch(request, function (results, status) {
     if (status === google.maps.places.PlacesServiceStatus.OK) {
       displayResults(results);
-      results.forEach(place => createMarker(place));
+      const selectedPrice = document.getElementById("price-filter").value;
+      const filtered = results
+      .filter(place => !selectedPrice || !place.price_level || place.price_level == selectedPrice)
+      .sort((a, b) => {
+        const aHasPrice = a.price_level != null;
+        const bHasPrice = b.price_level != null;
+        if (!aHasPrice && bHasPrice) return 1;
+        if (aHasPrice && !bHasPrice) return -1;
+        return 0;
+      });
+    filtered.forEach(place => createMarker(place));
     } else {
       console.error("Nearby search failed: ", status);
     }
@@ -95,7 +116,7 @@ function createMarker(place) {
       <div style="margin: 0;">
         <strong>${place.name}</strong><br>
         ${place.rating ? `⭐ ${place.rating.toFixed(1)}<br>` : ''}
-        ${place.price_level ? `💲 ${place.price_level.toFixed(2)}` : ''}
+        ${place.price_level ? '﹩'.repeat(place.price_level) : ''}
       </div>
     </div>
   `;
@@ -129,20 +150,33 @@ function displayResults(results) {
   const resultsDiv = document.getElementById("results");
   resultsDiv.innerHTML = "";
 
-  results.forEach(place => {
+  const selectedPrice = document.getElementById("price-filter").value;
+
+  const filtered = results
+    .filter(place => !selectedPrice || !place.price_level || place.price_level == selectedPrice)
+    .sort((a, b) => {
+      const aHasPrice = a.price_level != null;
+      const bHasPrice = b.price_level != null;
+      if (!aHasPrice && bHasPrice) return 1;   // a goes after b
+      if (aHasPrice && !bHasPrice) return -1;  // a goes before b
+      return 0; // preserve original order otherwise
+    });
+
+  filtered.forEach(place => {
     const el = document.createElement("div");
     el.className = "place-result";
     el.innerHTML = `
       <strong>${place.name}</strong><br>
       ${place.rating ? `⭐ ${place.rating.toFixed(1)}<br>` : ''}
-      ${place.price_level ? `💲 ${place.price_level.toFixed(2)}<br>` : ''}
-    `;
+      ${place.price_level ? `${'﹩'.repeat(place.price_level)}<br>` : ''}`;
     el.addEventListener("click", () => {
       if (place.place_id) showPlaceDetails(place.place_id);
     });
     resultsDiv.appendChild(el);
   });
 }
+
+
 
 function showPlaceDetails(placeId) {
   const service = new google.maps.places.PlacesService(document.createElement('div'));
@@ -154,7 +188,7 @@ function showPlaceDetails(placeId) {
       document.getElementById('modal-title').textContent = place.name;
       document.getElementById('modal-address').textContent = place.formatted_address;
       document.getElementById('modal-rating').textContent = place.rating ? `⭐ ${Number(place.rating).toFixed(1)}` : '';
-      document.getElementById('modal-price').textContent = place.price_level ? `💲 ${Number(place.price_level).toFixed(2)}` : '';
+      document.getElementById('modal-price').textContent = place.price_level ? '﹩'.repeat(Number(place.price_level)) : '';
 
       const websiteBtn = document.getElementById('modal-website');
       if (place.website) {

@@ -9,12 +9,19 @@
       <h2 class="sidebar-title">Explore Attractions</h2>
       <form id="explore-form">
         <input type="text" id="autocomplete" name="destination" class="explore-input" placeholder="Enter a destination...">
-        <select name="category">
-          <option value="">All Categories</option>
+        <select name="category" class="explore-input">
+          <option value="">Lodging</option>
           <option value="food">Food</option>
           <option value="culture">Culture</option>
           <option value="shopping">Shopping</option>
           <option value="adventure">Adventure</option>
+        </select>
+        <select id="price-filter" name="price_filter" class="explore-input">
+            <option value="">Any Price</option>
+            <option value="1">Affordable</option>
+            <option value="2">Mid-Range Options</option>
+            <option value="3">Upscale Experiences</option>
+            <option value="4">Luxury</option>
         </select>
         <button type="submit" class="btn">Search</button>
       </form>
