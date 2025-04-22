@@ -11,19 +11,27 @@
     <div class="sidebar">
       <h2 class="sidebar-title">Explore Attractions</h2>
       <form id="explore-form">
-        <input
-          type="text"
-          id="autocomplete"
-          name="destination"
-          class="explore-input"
-          placeholder="Enter a destination…"
-        >
-        <select name="category">
+        <input type="text" id="autocomplete" name="destination" class="explore-input" placeholder="Enter a destination...">
+       <select name="category" class="styled-dropdown">
           <option value="">All Categories</option>
-          <option value="food">Food</option>
-          <option value="culture">Culture</option>
-          <option value="shopping">Shopping</option>
-          <option value="adventure">Adventure</option>
+          <option value="food">🍽️ Restaurants</option>
+          <option value="cafes">☕ Cafes</option>
+          <option value="nightlife">🍸 Nightlife</option>
+          <option value="shopping">🛍️ Shopping</option>
+          <option value="museums">🏛️ Museums</option>
+          <option value="parks">🌳 Parks</option>
+          <option value="art">🖼️ Art Galleries</option>
+          <option value="hotels">🛏️ Hotels</option>
+          <option value="attractions">📸 Attractions</option>
+          <option value="religion">⛪ Churches</option>
+          <option value="entertainment">🎬 Movie Theaters</option>
+        </select>
+        <select id="price-filter" name="price_filter" class="explore-input">
+            <option value="">Any Price</option>
+            <option value="1">Affordable</option>
+            <option value="2">Mid-Range Options</option>
+            <option value="3">Upscale Experiences</option>
+            <option value="4">Luxury</option>
         </select>
         <button type="submit" class="btn">Search</button>
       </form>
@@ -41,21 +49,9 @@
         <p id="modal-address"></p>
         <p id="modal-rating"></p>
         <p id="modal-price"></p>
-        <a
-          id="modal-website"
-          href="#"
-          target="_blank"
-          class="btn btn-visit hidden"
-        >
-          Visit Website
-        </a>
+        <a id="modal-website" href="#" target="_blank" class="btn btn-visit hidden">Visit Website</a>
         <div id="modal-photos">
-          <img
-            id="modal-photo-img"
-            src=""
-            alt="Place photo"
-            style="border-radius: 12px; width: 100%; max-width: 500px; display: none;"
-          >
+          <img id="modal-photo-img" src="" alt="Place photo" style="border-radius: 12px; width: 100%; max-width: 500px; display: none;">
           <div class="photo-nav">
             <button id="prev-photo" class="btn">Previous</button>
             <button id="next-photo" class="btn">Next</button>
@@ -66,11 +62,6 @@
     </div>
   </div>
 
-  {#
-    Removed inline Maps API and explore.js; now loaded in extra_scripts
-    <script async defer src="…&callback=initMap"></script>
-    <script src="{% static 'explore/explore.js' %}"></script>
-  #}
 {% endblock %}
 
 {% block extra_scripts %}
