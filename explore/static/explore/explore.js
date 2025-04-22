@@ -6,16 +6,23 @@ let placeMarkers = [];
 let photoIndex = 0;
 let photoList = [];
 
-function initMap(lat = 33.7490, lng = -84.3880) {
-  //check for destination parameter
-  const params    = new URLSearchParams(window.location.search);
-  const destParam = params.get('destination');
-  const mapDiv    = document.getElementById('map');
+function initMap(lat = 33.7490, lng = 84.3880) {
+  // grab DOM elements
+  const mapDiv         = document.getElementById('map');
+  const input          = document.getElementById('autocomplete');
+  const categorySelect = document.querySelector("select[name='category']");
 
+  // parse any existing URL params
+  const params   = new URLSearchParams(window.location.search);
+  const destParam   = params.get('destination');
+  const categoryParam = params.get('category') || '';
+
+  // hide map until we search
   if (destParam) {
     mapDiv.style.visibility = 'hidden';
   }
 
+  // initialize map & services
   const defaultLocation = new google.maps.LatLng(lat, lng);
   map = new google.maps.Map(mapDiv, {
     center: defaultLocation,
@@ -24,34 +31,53 @@ function initMap(lat = 33.7490, lng = -84.3880) {
   service    = new google.maps.places.PlacesService(map);
   infoWindow = new google.maps.InfoWindow();
 
-
-  const input = document.getElementById("autocomplete");
+  // wire up autocomplete
   const autocomplete = new google.maps.places.Autocomplete(input);
-  autocomplete.bindTo("bounds", map);
+  autocomplete.bindTo('bounds', map);
 
-  document
-    .getElementById("explore-form")
-    .addEventListener("submit", function (e) {
-      e.preventDefault();
-      const destination = input.value;
-      const category    = document.querySelector("select[name='category']").value;
-      searchPlaces(destination, category);
-    });
+  document.getElementById('explore-form').addEventListener('submit', e => {
+    e.preventDefault();
+    const destination = input.value.trim();
+    const category    = categorySelect.value;
+    if (!destination) return alert('Please enter a destination.');
 
-  if (!destParam) {
+    const newParams = new URLSearchParams();
+    newParams.set('destination', destination);
+    if (category) newParams.set('category', category);
+    window.history.pushState({}, '', window.location.pathname + '?' + newParams);
+
+    // run search
+    searchPlaces(destination, category);
+  });
+
+  //refresh forward backward handler
+  window.addEventListener('popstate', () => {
+    const p     = new URLSearchParams(window.location.search);
+    const dest  = p.get('destination');
+    const cat   = p.get('category') || '';
+    if (dest) {
+      input.value          = dest;
+      categorySelect.value = cat;
+      searchPlaces(dest, cat);
+    } else {
+      // no params → clear map
+      clearPlaceMarkers();
+      if (destinationMarker) destinationMarker.setMap(null);
+    }
+  });
+
+  if (destParam) {
+    input.value          = destParam;
+    categorySelect.value = categoryParam;
+    searchPlaces(destParam, categoryParam);
+  } else {
     mapDiv.style.visibility = 'visible';
   }
 
-  if (destParam) {
-    input.value = destParam;
-    searchPlaces(destParam, '');
-  }
-
-
-  //THIS IS DEPRECATED
-  map.addListener("click", (event) => {
+  // preserve your POI‑click handler
+  map.addListener('click', event => {
     if (event.placeId) {
-      event.stop(); // Prevent default popup
+      event.stop();
       handlePOIClick(event.placeId);
     }
   });
@@ -103,6 +129,7 @@ function searchPlaces(query, category) {
 }
 
 function findNearby(location, category) {
+  // map our dropdown values to Places types
   const categoryMap = {
     food: 'restaurant',
     cafes: 'cafe',
@@ -117,48 +144,47 @@ function findNearby(location, category) {
     entertainment: 'movie_theater'
   };
 
+  // clear any old markers
   clearPlaceMarkers();
 
+  // decide which types to search
   const typesToSearch = category
-    ? [categoryMap[category]]
-    : ['restaurant', 'cafe', 'park', 'museum', 'art_gallery', 'shopping_mall', 'lodging', 'tourist_attraction', 'church', 'movie_theater'];
+    ? [ categoryMap[category] ]
+    : [
+        'restaurant', 'cafe', 'park',
+        'museum', 'art_gallery',
+        'shopping_mall', 'lodging',
+        'tourist_attraction', 'church',
+        'movie_theater'
+      ];
 
   const allResults = [];
   let completed = 0;
 
   typesToSearch.forEach(type => {
-    const request = {
-      location,
-      radius: 2000,
-      type
-    };
-
+    const request = { location, radius: 2000, type };
     const localService = new google.maps.places.PlacesService(map);
+
     localService.nearbySearch(request, (results, status) => {
-      if (status !== google.maps.places.PlacesServiceStatus.OK || !results || results.length === 0) {
-        console.warn("No nearby places found.");
-        displayResults([]);
-        return;
+      if (status === google.maps.places.PlacesServiceStatus.OK
+          && results && results.length > 0) {
+        allResults.push(...results);
+      } else {
+        console.warn(`No nearby places for type "${type}": ${status}`);
       }
 
       completed++;
-      if (status === google.maps.places.PlacesServiceStatus.OK) {
-        allResults.push(...results);
-      }
 
-      // When all requests are done
       if (completed === typesToSearch.length) {
         const unique = deduplicatePlaces(allResults);
-
-        // Optionally shuffle or limit
-        const sampled = shuffle(unique).slice(0, 20); // Max 20 mixed results
-
+        const sampled = shuffle(unique).slice(0, 20);
         displayResults(sampled);
         sampled.forEach((place, i) => createMarker(place, i));
       }
     });
   });
 }
+
 
 function deduplicatePlaces(places) {
   const seen = new Set();
