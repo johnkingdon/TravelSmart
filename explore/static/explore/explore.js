@@ -7,24 +7,45 @@ let photoIndex = 0;
 let photoList = [];
 
 function initMap(lat = 33.7490, lng = -84.3880) {
+  //check for destination parameter
+  const params    = new URLSearchParams(window.location.search);
+  const destParam = params.get('destination');
+  const mapDiv    = document.getElementById('map');
+
+  if (destParam) {
+    mapDiv.style.visibility = 'hidden';
+  }
+
   const defaultLocation = new google.maps.LatLng(lat, lng);
-  map = new google.maps.Map(document.getElementById("map"), {
+  map = new google.maps.Map(mapDiv, {
     center: defaultLocation,
     zoom: 14,
   });
-
+  service    = new google.maps.places.PlacesService(map);
   infoWindow = new google.maps.InfoWindow();
 
-  document.getElementById("explore-form").addEventListener("submit", function (e) {
-    e.preventDefault();
-    const destination = document.querySelector("input[name='destination']").value;
-    const category = document.querySelector("select[name='category']").value;
-    searchPlaces(destination, category);
-  });
 
   const input = document.getElementById("autocomplete");
   const autocomplete = new google.maps.places.Autocomplete(input);
   autocomplete.bindTo("bounds", map);
+
+  document
+    .getElementById("explore-form")
+    .addEventListener("submit", function (e) {
+      e.preventDefault();
+      const destination = input.value;
+      const category    = document.querySelector("select[name='category']").value;
+      searchPlaces(destination, category);
+    });
+
+  if (!destParam) {
+    mapDiv.style.visibility = 'visible';
+  }
+
+  if (destParam) {
+    input.value = destParam;
+    searchPlaces(destParam, '');
+  }
 }
 
 function searchPlaces(query, category) {
@@ -40,15 +61,18 @@ function searchPlaces(query, category) {
   placesService.findPlaceFromQuery(request, function (results, status) {
     if (status === google.maps.places.PlacesServiceStatus.OK && results[0]) {
       const location = results[0].geometry.location;
+
       map.setCenter(location);
+
+      document.getElementById('map').style.visibility = 'visible';
 
       destinationMarker = new google.maps.Marker({
         map,
         position: location,
-        title: "Selected Destination",
-        icon: {
-          url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
-        }
+        title: query,
+        // icon: {
+        //   url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+        // }
       });
 
       findNearby(location, category);
@@ -104,6 +128,9 @@ function createMarker(place) {
     map,
     position: place.geometry.location,
     title: place.name,
+    icon: {
+    url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+    }
   });
 
   placeMarkers.push(marker);

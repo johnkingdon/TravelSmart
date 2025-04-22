@@ -146,15 +146,15 @@ html, body {
   flex: 0.7;
   display: flex;
   align-items: center;
+  flex-direction: column;
   justify-content: center;
-  padding-left: 0.5rem;
   z-index: 2;
   background: white;
 }
 
 .hero-heading {
   font-size: 3rem;
-  text-align: left;
+  text-align: center;
   transition: transform 0.3s ease;
   line-height: 1.2;
 }
@@ -165,6 +165,30 @@ html, body {
 }
 
 .hero-heading-link:hover .hero-heading {
+  transform: scale(1.2);
+}
+
+.hero-text-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.hero-inspiration {
+  margin-top: 2.5rem;
+}
+
+#inspiration-link {
+  font-size: 1.5rem;
+  line-height: 1.2;
+  text-decoration: none;
+  color: inherit;
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+#inspiration-link:hover {
   transform: scale(1.2);
 }
 
@@ -186,19 +210,6 @@ html, body {
   position: relative;
   z-index: 1;
 }
-
-/*!* FADE on left side of image *!*/
-/*.hero-image-container::before {*/
-/*  content: "";*/
-/*  position: absolute;*/
-/*  left: 0;*/
-/*  top: 0;*/
-/*  height: 100%;*/
-/*  width: 200px; !* adjust width for fade depth *!*/
-/*  background: linear-gradient(to right, white, rgba(255, 255, 255, 0));*/
-/*  z-index: 2;*/
-/*  pointer-events: none;*/
-/*}*/
 
 .collage {
   position: relative;

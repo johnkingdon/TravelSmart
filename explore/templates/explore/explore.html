@@ -1,14 +1,23 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block content %}
+  <link
+    rel="stylesheet"
+    href="{% static 'explore/explore.css' %}"
+  >
 
-<link rel="stylesheet" href="{% static 'explore/explore.css' %}">
-
-<div class="explore-container">
-  <div class="sidebar">
+  <div class="explore-container">
+    <div class="sidebar">
       <h2 class="sidebar-title">Explore Attractions</h2>
       <form id="explore-form">
-        <input type="text" id="autocomplete" name="destination" class="explore-input" placeholder="Enter a destination...">
+        <input
+          type="text"
+          id="autocomplete"
+          name="destination"
+          class="explore-input"
+          placeholder="Enter a destination…"
+        >
         <select name="category">
           <option value="">All Categories</option>
           <option value="food">Food</option>
@@ -19,32 +28,55 @@
         <button type="submit" class="btn">Search</button>
       </form>
       <div id="results" class="results-scroll"></div>
-  </div>
+    </div>
 
-  <div id="map" class="explore-map"></div>
+    <div id="map" class="explore-map"></div>
 
-  <div id="modal-backdrop" class="hidden"></div>
+    <div id="modal-backdrop" class="hidden"></div>
 
-  <div id="place-modal" class="modal hidden">
-    <div class="modal-content">
-      <span id="close-modal" class="close">&times;</span>
-      <h2 id="modal-title"></h2>
-      <p id="modal-address"></p>
-      <p id="modal-rating"></p>
-      <p id="modal-price"></p>
-      <a id="modal-website" href="#" target="_blank" class="btn btn-visit hidden">Visit Website</a>
-      <div id="modal-photos">
-        <img id="modal-photo-img" src="" alt="Place photo" style="border-radius: 12px; width: 100%; max-width: 500px; display: none;">
-        <div class="photo-nav">
-          <button id="prev-photo" class="btn">Previous</button>
-          <button id="next-photo" class="btn">Next</button>
+    <div id="place-modal" class="modal hidden">
+      <div class="modal-content">
+        <span id="close-modal" class="close">&times;</span>
+        <h2 id="modal-title"></h2>
+        <p id="modal-address"></p>
+        <p id="modal-rating"></p>
+        <p id="modal-price"></p>
+        <a
+          id="modal-website"
+          href="#"
+          target="_blank"
+          class="btn btn-visit hidden"
+        >
+          Visit Website
+        </a>
+        <div id="modal-photos">
+          <img
+            id="modal-photo-img"
+            src=""
+            alt="Place photo"
+            style="border-radius: 12px; width: 100%; max-width: 500px; display: none;"
+          >
+          <div class="photo-nav">
+            <button id="prev-photo" class="btn">Previous</button>
+            <button id="next-photo" class="btn">Next</button>
+          </div>
         </div>
+        <div id="modal-reviews"></div>
       </div>
-      <div id="modal-reviews"></div>
     </div>
   </div>
-</div>
 
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDF4ATm4jiTrHA8uB8b5AG9Q-84OsOzoBU&libraries=places&callback=initMap"></script>
-<script src="{% static 'explore/explore.js' %}"></script>
+  {#
+    Removed inline Maps API and explore.js; now loaded in extra_scripts
+    <script async defer src="…&callback=initMap"></script>
+    <script src="{% static 'explore/explore.js' %}"></script>
+  #}
+{% endblock %}
+
+{% block extra_scripts %}
+  <script src="{% static 'explore/explore.js' %}"></script>
+  <script
+    defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDF4ATm4jiTrHA8uB8b5AG9Q-84OsOzoBU&libraries=places&callback=initMap"
+  ></script>
 {% endblock %}
