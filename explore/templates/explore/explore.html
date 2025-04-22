@@ -60,12 +60,22 @@
         <div id="modal-reviews"></div>
       </div>
     </div>
+
+    <div id="itinerary" class="itinerary-panel">
+      <h2 class="itinerary-title">My Itinerary</h2>
+      <div id="itinerary-list" class="itinerary-list">
+        <p class="empty-text">Drag destinations here</p>
+      </div>
+      <div id="itinerary-trash" class="itinerary-trash" title="Drop here to remove">🗑️</div>
+    </div>
+
   </div>
 
 {% endblock %}
 
 {% block extra_scripts %}
   <script src="{% static 'explore/explore.js' %}"></script>
+  <script src="{% static 'explore/itinerary.js' %}"></script>
   <script
     defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDF4ATm4jiTrHA8uB8b5AG9Q-84OsOzoBU&libraries=places&callback=initMap"

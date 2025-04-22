@@ -6,7 +6,7 @@ let placeMarkers = [];
 let photoIndex = 0;
 let photoList = [];
 
-function initMap(lat = 33.7490, lng = 84.3880) {
+function initMap(lat = 33.7490, lng = -84.3880) {
   // grab DOM elements
   const mapDiv         = document.getElementById('map');
   const input          = document.getElementById('autocomplete');
@@ -370,6 +370,11 @@ function displayResults(results) {
     });
 
     resultsDiv.appendChild(el);
+
+
+    window.dispatchEvent(new CustomEvent('placeCard', {
+      detail: { el, place }
+    }));
   });
 }
 
