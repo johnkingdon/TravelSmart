@@ -143,16 +143,16 @@ function findNearby(location, category) {
       }
 
       if (completed === typesToSearch.length) {
-
         const unique = deduplicatePlaces(allResults);
 
         const filtered = unique.filter(place => {
           const price = place.price_level;
-          return !selectedPrice || price == selectedPrice;
+          return !selectedPrice || (price != null && price == selectedPrice);
         });
 
-
-        const sorted = filtered.sort((a, b) => {
+        // Shuffle and push null-price items to the bottom
+        const shuffled = shuffle(filtered);
+        const sorted = shuffled.sort((a, b) => {
           const aHasPrice = a.price_level != null;
           const bHasPrice = b.price_level != null;
           if (!aHasPrice && bHasPrice) return 1;
@@ -160,13 +160,13 @@ function findNearby(location, category) {
           return 0;
         });
 
-        const sampled = shuffle(sorted);
-        displayResults(sampled);
-        sampled.forEach((place, i) => createMarker(place, i));
+        displayResults(sorted);
+        sorted.forEach((place, i) => createMarker(place, i));
       }
     });
   });
 }
+
 
 
 function deduplicatePlaces(places) {
@@ -251,9 +251,10 @@ function generateInfoCard(place) {
 
   // Build price level display
   let priceHTML = '';
-  const adjusted = Math.max(1, priceLevel);
-  for (let i = 0; i < 4; i++) {
-    priceHTML += `<span style="color:${i < adjusted ? '#2e7d32' : '#ccc'}">$</span>`;
+  if (priceLevel != null) {
+    for (let i = 0; i < 4; i++) {
+      priceHTML += `<span style="color:${i < priceLevel ? '#2e7d32' : '#ccc'}">$</span>`;
+    }
   }
 
   const statusHTML = (status === 'OPERATIONAL')
@@ -315,10 +316,12 @@ function displayResults(results) {
     for (let i = 0; i < emptyStars; i++) starsHTML += '<span class="star empty">★</span>';
 
     let priceHTML = '';
-    const adjustedPriceLevel = Math.max(1, priceLevel);
-    for (let i = 0; i < 4; i++) {
-      priceHTML += `<span class="price-sign ${i < adjustedPriceLevel ? 'filled' : 'empty'}">$</span>`;
+    if (priceLevel != null) {
+      for (let i = 0; i < 4; i++) {
+        priceHTML += `<span class="price-sign ${i < priceLevel ? 'filled' : 'empty'}">$</span>`;
+      }
     }
+
 
     const readableType = formatPlaceType(types);
 
@@ -431,10 +434,12 @@ function showPlaceDetails(placeId) {
     // 💲 Price Level
     const priceLevel = place.price_level ?? -1;
     let priceHTML = '';
-    const adjustedPriceLevel = Math.max(1, priceLevel);
-    for (let i = 0; i < 4; i++) {
-      priceHTML += `<span class="price-sign ${i < adjustedPriceLevel ? 'filled' : 'empty'}">$</span>`;
+    if (priceLevel != null) {
+      for (let i = 0; i < 4; i++) {
+        priceHTML += `<span class="price-sign ${i < priceLevel ? 'filled' : 'empty'}">$</span>`;
+      }
     }
+
     priceEl.innerHTML = priceHTML;
 
     // 📍 Type (with emoji)
