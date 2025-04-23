@@ -27,12 +27,14 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   const routeBtn = document.getElementById('generate-route-btn');
+
   if (window.map instanceof google.maps.Map) {
     directionsRenderer.setMap(window.map);
   } else {
     console.warn("Map instance not available yet for directions rendering.");
   }
 
+  document.getElementById('clear-route-btn').addEventListener('click', clearRoute);
 
   routeBtn.addEventListener('click', () => {
     if (!routeBtn.classList.contains('disabled')) {
@@ -83,6 +85,7 @@ function clearRoute() {
   }
 
   window.routeActive = false;
+  document.getElementById('clear-route-btn').classList.add('hidden');
 }
 
 window.addEventListener('itineraryUpdated', () => {
@@ -100,6 +103,7 @@ window.addEventListener('itineraryUpdated', () => {
 
 function generateAndDisplayRoute() {
   window.routeActive = true;
+  document.getElementById('clear-route-btn').classList.remove('hidden');
 
   const raw = localStorage.getItem('ts_itinerary');
   const items = raw ? JSON.parse(raw) : [];
