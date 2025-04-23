@@ -42,6 +42,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  document.getElementById('optimize-route-btn').addEventListener('click', () => {
+    generateAndDisplayRoute(true); // pass optimize=true
+  });
+
   window.addEventListener('itineraryUpdated', updateRouteButtonState);
   updateRouteButtonState();
 });
@@ -50,13 +54,23 @@ function updateRouteButtonState() {
   const raw = localStorage.getItem('ts_itinerary');
   const items = raw ? JSON.parse(raw) : [];
 
-  const btn = document.getElementById('generate-route-btn');
+  const generateBtn = document.getElementById('generate-route-btn');
+  const optimizeBtn = document.getElementById('optimize-route-btn');
+
+  // Generate Route Button logic
   if (items.length >= 2) {
-    btn.classList.remove('disabled');
-    btn.removeAttribute('title');
+    generateBtn.classList.remove('disabled');
+    generateBtn.removeAttribute('title');
   } else {
-    btn.classList.add('disabled');
-    btn.setAttribute('title', 'Itinerary must have at least 2 items to generate route');
+    generateBtn.classList.add('disabled');
+    generateBtn.setAttribute('title', 'Itinerary must have at least 2 items to generate route');
+  }
+
+  // Optimize Button logic – only show if route is active and there are 4+ items
+  if (window.routeActive && items.length >= 4) {
+    optimizeBtn.classList.remove('hidden');
+  } else {
+    optimizeBtn.classList.add('hidden');
   }
 }
 
@@ -86,6 +100,8 @@ function clearRoute() {
 
   window.routeActive = false;
   document.getElementById('clear-route-btn').classList.add('hidden');
+  //document.getElementById('optimize-route-btn').classList.add('hidden');
+  updateRouteButtonState()
 }
 
 window.addEventListener('itineraryUpdated', () => {
@@ -101,7 +117,7 @@ window.addEventListener('itineraryUpdated', () => {
   }
 });
 
-function generateAndDisplayRoute() {
+function generateAndDisplayRoute(optimize = false) {
   window.routeActive = true;
   document.getElementById('clear-route-btn').classList.remove('hidden');
 
@@ -110,7 +126,7 @@ function generateAndDisplayRoute() {
 
   if (items.length < 2) return;
 
-  const placeIds = items.filter(item => item.place_id).map(item => item.place_id);
+  const placeIds = items.filter(item => item && item.place_id).map(item => item.place_id);
   if (placeIds.length < 2) return alert("Not enough valid places to generate route.");
 
   const service = new google.maps.places.PlacesService(document.createElement('div'));
@@ -134,7 +150,8 @@ function generateAndDisplayRoute() {
       position,
       label: `${number}`,
       map: window.map,
-      title
+      title,
+      zIndex: 1000 + number
     });
     window.customRouteMarkers.push(marker);
 
@@ -165,16 +182,27 @@ function generateAndDisplayRoute() {
           origin,
           destination,
           waypoints,
-          optimizeWaypoints: true,
+          optimizeWaypoints: optimize,
           travelMode: google.maps.TravelMode.DRIVING
         };
 
         directionsService.route(request, (response, status) => {
-          console.log("Directions response:", response, "Status:", status);
           if (status === 'OK') {
             directionsRenderer.setDirections(response);
 
             clearCustomMarkers();
+
+            // Update itinerary with optimized route (if applicable)
+            if (optimize && response.routes[0].waypoint_order) {
+              const order = response.routes[0].waypoint_order;
+              const original = [...items];
+              const reordered = [original[0], ...order.map(i => original[i + 1]), original[original.length - 1]];
+
+              localStorage.setItem('ts_itinerary', JSON.stringify(reordered));
+              window.dispatchEvent(new Event('itineraryUpdated'));
+
+              return; // Don't regenerate right away — let itineraryUpdated handle it
+            }
 
             const legs = response.routes[0].legs;
 
@@ -210,6 +238,9 @@ function generateAndDisplayRoute() {
               ⏱️ <strong>Time:</strong> ${(totalTime / 60).toFixed(1)} mins<br>
               ⛽ <strong>Estimated Gas Cost:</strong> $${gasCost.toFixed(2)}
             `;
+
+            //document.getElementById('optimize-route-btn').classList.remove('hidden');
+            updateRouteButtonState()
           } else {
             alert('Failed to generate route: ' + status);
           }

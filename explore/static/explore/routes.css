@@ -3,7 +3,8 @@
    Route Button Styling
    ======================= */
 .route-btn {
-  padding: 12px 120px;
+  padding: 12px 60px;
+  width: 300px;
   font-size: 16px;
   font-weight: 600;
   color: white;
@@ -12,7 +13,6 @@
   border-radius: 999px;
   cursor: pointer;
   transition: background 0.3s ease, transform 0.2s ease;
-  width: max-content;
   text-align: center;
 }
 
@@ -116,4 +116,12 @@
 
 .route-btn.danger:hover {
   background: linear-gradient(to right, #c0392b, #a93226);
+}
+
+.route-btn.secondary {
+  background: linear-gradient(to right, #10b981, #059669);
+}
+
+.route-btn.secondary:hover {
+  background: linear-gradient(to right, #059669, #047857);
 }

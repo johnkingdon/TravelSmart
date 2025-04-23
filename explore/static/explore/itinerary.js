@@ -39,6 +39,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  window.addEventListener('itineraryUpdated', () => {
+    const list = document.getElementById('itinerary-list');
+    list.innerHTML = '<p class="empty-text">Drag destinations here</p>';
+    loadItinerary();
+    updateItineraryNumbers();
+  });
+
   // ── Render a saved item ───────────────────
   function renderItineraryItem(item) {
     const list = document.getElementById('itinerary-list');
@@ -117,6 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
       div.classList.remove('drop-before', 'drop-after');
     });
   }
+  window.renderItineraryItem = renderItineraryItem;
 
   // ── Add new from a place object ──────────
   function addItineraryItem(place) {

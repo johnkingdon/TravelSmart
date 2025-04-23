@@ -19,7 +19,7 @@ html, body {
 .sidebar {
   display: flex;
   flex-direction: column;
-  width: 400px;
+  width: 320px;
   background-color: #f9f9f9;
   overflow: hidden;
 }
