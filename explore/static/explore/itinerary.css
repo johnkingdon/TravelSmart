@@ -4,27 +4,21 @@
 
 /* Container panel */
 .itinerary-panel {
-  position: absolute;
-  top: 0;
-  right: 0;
   width: 280px;
-  height: 100%;
   background-color: #ffffff;
   border-left: 1px solid #dddddd;
   display: flex;
   flex-direction: column;
-  z-index: 10;
-  box-shadow: -2px 0 4px rgba(0,0,0,0.1);
+  box-shadow: -2px 0 4px rgba(0,0,0,0.05);
 }
 
 /* Title bar */
 .itinerary-panel .itinerary-title {
-  margin: 0;
-  padding: 12px 16px;
-  background-color: #2e7d32;
-  color: #ffffff;
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding: 20px 0 0 0;
+  color: #111;
+  background-color: #f9f9f9;
   text-align: center;
 }
 
@@ -101,6 +95,17 @@
 /* Highlight when dragging over */
 .itinerary-panel .itinerary-trash.dragover {
   background-color: #ffe6e6;
+}
+
+/* Drag-drop horizontal bar showing where you'd drop */
+.itinerary-item.drop-before {
+  border-top: 4px solid #3b82f6;
+  margin-top: -2px;
+}
+
+.itinerary-item.drop-after {
+  border-bottom: 4px solid #3b82f6;
+  margin-bottom: -2px;
 }
 
 /* Responsive tweak: collapse panel on small screens */

@@ -39,8 +39,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // reorder handlers
     div.addEventListener('dragstart', dragStart);
-    div.addEventListener('dragover', e => e.preventDefault());
-    div.addEventListener('drop', dropOnItem);
+    div.addEventListener('dragover', e => {
+      e.preventDefault();
+      const rect = div.getBoundingClientRect();
+      const isAboveHalf = e.clientY < rect.top + rect.height / 2;
+
+      div.classList.toggle('drop-before', isAboveHalf);
+      div.classList.toggle('drop-after', !isAboveHalf);
+    });
+
+    div.addEventListener('dragleave', () => {
+      div.classList.remove('drop-before', 'drop-after');
+    });
+
+    div.addEventListener('drop', e => {
+      e.preventDefault();
+      const rect = div.getBoundingClientRect();
+      const isAboveHalf = e.clientY < rect.top + rect.height / 2;
+
+      const list = div.parentNode;
+      if (draggedItem && draggedItem !== div) {
+        if (isAboveHalf) {
+          list.insertBefore(draggedItem, div);
+        } else {
+          list.insertBefore(draggedItem, div.nextSibling);
+        }
+
+        // update the state
+        itinerary = Array.from(list.children)
+          .filter(el => el.classList.contains('itinerary-item'))
+          .map(el => itinerary.find(i => i.itemId === el.dataset.itemId));
+        saveItinerary();
+      }
+
+      div.classList.remove('drop-before', 'drop-after');
+    });
   }
 
   // ── Add new from a place object ──────────

@@ -7,9 +7,13 @@ html, body {
 
 .explore-container {
   display: flex;
-  height: 100vh;
+  position: absolute;
+  top: 100px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: auto;
   overflow: hidden;
-  overflow-y: auto;
 }
 
 .sidebar {
@@ -22,7 +26,9 @@ html, body {
 
 .sidebar h2 {
   font-size: 1.5rem;
-  padding: 20px 20px 10px 20px;
+  font-weight: bold;
+  padding: 20px 0 12px 0;
+  text-align: center;
 }
 
 #explore-form {
