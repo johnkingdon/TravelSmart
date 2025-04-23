@@ -1,0 +1,45 @@
+
+/* =======================
+   Route Button Styling
+   ======================= */
+.route-btn {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 28px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(to right, #4f46e5, #3b82f6);
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  z-index: 20;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.route-btn:hover:not(.disabled) {
+  background: linear-gradient(to right, #3b82f6, #2563eb);
+  transform: translate(-50%, -2px);
+}
+
+.route-btn.disabled {
+  background: #ccc;
+  color: #555;
+  cursor: not-allowed;
+}
+
+.route-btn.disabled:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  white-space: nowrap;
+}

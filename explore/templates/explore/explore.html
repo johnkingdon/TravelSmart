@@ -4,6 +4,7 @@
 {% block content %}
   <link rel="stylesheet" href="{% static 'explore/explore.css' %}">
   <link rel="stylesheet" href="{% static 'explore/itinerary.css' %}">
+  <link rel="stylesheet" href="{% static 'explore/routes.css' %}">
 
   <div class="explore-container">
     <div class="sidebar">
@@ -59,6 +60,10 @@
       </div>
     </div>
 
+    <button id="generate-route-btn" class="route-btn disabled" title="Itinerary must have at least 2 items to generate route">
+      Generate Route
+    </button>
+
     <div id="itinerary" class="itinerary-panel">
       <h2 class="itinerary-title">My Itinerary</h2>
       <div id="itinerary-list" class="itinerary-list">
@@ -74,6 +79,7 @@
 {% block extra_scripts %}
   <script src="{% static 'explore/explore.js' %}"></script>
   <script src="{% static 'explore/itinerary.js' %}"></script>
+  <script src="{% static 'explore/routes.js' %}"></script>
   <script
     defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDF4ATm4jiTrHA8uB8b5AG9Q-84OsOzoBU&libraries=places&callback=initMap"
