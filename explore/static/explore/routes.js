@@ -74,19 +74,40 @@ function generateAndDisplayRoute() {
   if (items.length < 2) return;
 
   const placeIds = items.filter(item => item.place_id).map(item => item.place_id);
-
   if (placeIds.length < 2) return alert("Not enough valid places to generate route.");
 
   const service = new google.maps.places.PlacesService(document.createElement('div'));
-
   const locations = [];
   let completed = 0;
 
+  // Array to track custom markers
+  window.customRouteMarkers = window.customRouteMarkers || [];
+
+  // Cleanup old markers
+  function clearCustomMarkers() {
+    window.customRouteMarkers.forEach(marker => marker.setMap(null));
+    window.customRouteMarkers = [];
+  }
+
+  // Create numbered marker
+  function createNumberedMarker(position, number, title) {
+    const marker = new google.maps.Marker({
+      position,
+      label: `${number}`,
+      map: window.map,
+      title
+    });
+    window.customRouteMarkers.push(marker);
+  }
+
   placeIds.forEach((id, index) => {
-    service.getDetails({ placeId: id, fields: ['geometry'] }, (place, status) => {
+    service.getDetails({ placeId: id, fields: ['geometry', 'name'] }, (place, status) => {
       completed++;
       if (status === google.maps.places.PlacesServiceStatus.OK && place.geometry) {
-        locations[index] = place.geometry.location;
+        locations[index] = {
+          location: place.geometry.location,
+          name: place.name
+        };
       } else {
         console.warn("Failed to get location for place:", id);
       }
@@ -94,9 +115,9 @@ function generateAndDisplayRoute() {
       if (completed === placeIds.length) {
         if (locations.length !== placeIds.length) return alert("One or more locations failed.");
 
-        const origin = locations[0];
-        const destination = locations[locations.length - 1];
-        const waypoints = locations.slice(1, -1).map(loc => ({ location: loc, stopover: true }));
+        const origin = locations[0].location;
+        const destination = locations[locations.length - 1].location;
+        const waypoints = locations.slice(1, -1).map(loc => ({ location: loc.location, stopover: true }));
 
         const request = {
           origin,
@@ -108,7 +129,6 @@ function generateAndDisplayRoute() {
 
         directionsService.route(request, (response, status) => {
           console.log("Directions response:", response, "Status:", status);
-
           if (status === 'OK') {
             directionsRenderer.setDirections(response);
 
@@ -116,15 +136,38 @@ function generateAndDisplayRoute() {
 
             const legs = response.routes[0].legs;
 
-            // Create numbered markers for start of each leg
+            // Add numbered markers at start of each leg
             legs.forEach((leg, i) => {
               createNumberedMarker(leg.start_location, i + 1, leg.start_address);
 
-              // If it's the last leg, add a marker for the destination
               if (i === legs.length - 1) {
                 createNumberedMarker(leg.end_location, i + 2, leg.end_address);
               }
             });
+
+            // Total distance/time
+            let totalDist = 0;
+            let totalTime = 0;
+            legs.forEach(leg => {
+              totalDist += leg.distance.value;
+              totalTime += leg.duration.value;
+            });
+
+            // Calculate gas cost
+            const totalMiles = totalDist / 1609.34;
+            const mpg = 25;
+            const gasPrice = 3.5;
+            const gasCost = (totalMiles / mpg) * gasPrice;
+
+            // Update summary box
+            const infoBox = document.getElementById('route-info-box');
+            infoBox.classList.remove('hidden');
+            infoBox.innerHTML = `
+              <div class="title">Route Summary</div>
+              🚗 <strong>Distance:</strong> ${totalMiles.toFixed(2)} mi<br>
+              ⏱️ <strong>Time:</strong> ${(totalTime / 60).toFixed(1)} mins<br>
+              ⛽ <strong>Estimated Gas Cost:</strong> $${gasCost.toFixed(2)}
+            `;
           } else {
             alert('Failed to generate route: ' + status);
           }

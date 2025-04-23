@@ -105,8 +105,8 @@ document.addEventListener('DOMContentLoaded', () => {
       name: place.name
     };
     itinerary.push(item);
-    saveItinerary();
     renderItineraryItem(item);
+    saveItinerary();
   }
 
   // ── Remove by its unique id ──────────────
