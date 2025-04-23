@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
         numberLabel.className = 'number-label';
         card.prepend(numberLabel);
       }
-      numberLabel.textContent = `${index + 1}. `;
+      numberLabel.textContent = `${index + 1}`;
     });
   }
 
@@ -54,6 +54,27 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     list.appendChild(div);
 
+    // Add hover events to highlight corresponding marker
+    const placeId = item.place_id;
+    div.dataset.placeId = placeId;
+
+    /*
+    div.addEventListener('mouseenter', () => {
+      const marker = window.markerMap?.[placeId];
+      if (marker) {
+        marker.setAnimation(google.maps.Animation.BOUNCE);
+      }
+    });
+
+    div.addEventListener('mouseleave', () => {
+      const marker = window.markerMap?.[placeId];
+      if (marker) {
+        marker.setAnimation(null);
+      }
+    });
+    /*
+
+     */
     // remove handler
     div.querySelector('.remove-btn').onclick = () =>
       removeItineraryItem(item.itemId);

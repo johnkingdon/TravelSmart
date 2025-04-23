@@ -1,10 +1,10 @@
 /* ===================================================================================
-   My Itinerary Panel Styles
+   My Itinerary Panel Styles (Updated for Visual Consistency)
    =================================================================================== */
 
 /* Container panel */
 .itinerary-panel {
-  width: 280px;
+  width: 320px;
   background-color: #ffffff;
   border-left: 1px solid #dddddd;
   display: flex;
@@ -22,7 +22,7 @@
   text-align: center;
 }
 
-/* The scrollable list area */
+/* Scrollable list area */
 .itinerary-panel .itinerary-list {
   flex: 1;
   overflow-y: auto;
@@ -30,7 +30,7 @@
   background-color: #f9f9f9;
 }
 
-/* Placeholder text when empty */
+/* Placeholder when empty */
 .itinerary-panel .empty-text {
   margin: 40px 0 0;
   text-align: center;
@@ -43,46 +43,65 @@
   position: relative;
   display: flex;
   align-items: center;
-  padding: 10px 12px 10px 38px; /* leave room for number on left */
+  justify-content: space-between;
+  padding: 14px 16px 14px 56px;
   background-color: #ffffff;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  margin: 6px 0;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  margin: 10px 0;
   cursor: move;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, box-shadow 0.2s;
 }
 
-/* Hover effect on items */
+/* Hover effect */
 .itinerary-panel .itinerary-item:hover {
-  background-color: #f0f0f0;
+  background-color: #f9fafe;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
 }
 
-/* The place name span */
+/* Place name text */
 .itinerary-panel .itinerary-item span {
-  flex: 1;
-  font-size: 14px;
-  color: #333;
+  flex-grow: 1;
+  font-size: 15px;
+  font-weight: 500;
+  color: #222;
+  margin-right: 10px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Remove (“×”) button */
+/* Number badge */
+.itinerary-panel .itinerary-item .number-label {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #f2f4f7;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Remove ("×") button */
 .itinerary-panel .itinerary-item .remove-btn {
   background: none;
   border: none;
-  font-size: 25px;
+  font-size: 20px;
   color: #a00;
   cursor: pointer;
-  padding: 0 4px;
-  line-height: 0;
-  transition: color 0.2s;
+  padding: 0 6px;
+  line-height: 1;
+  transition: color 0.2s ease;
 }
 
-/* Remove button hover */
 .itinerary-panel .itinerary-item .remove-btn:hover {
   color: #e00;
 }
 
-/* Trash‑can drop zone at bottom */
+/* Trash‑can drop zone */
 .itinerary-panel .itinerary-trash {
   padding: 10px;
   text-align: center;
@@ -92,12 +111,11 @@
   transition: background-color 0.2s;
 }
 
-/* Highlight when dragging over */
 .itinerary-panel .itinerary-trash.dragover {
   background-color: #ffe6e6;
 }
 
-/* Drag-drop horizontal bar showing where you'd drop */
+/* Drag-drop horizontal bar */
 .itinerary-item.drop-before {
   border-top: 4px solid #3b82f6;
   margin-top: -2px;
@@ -108,24 +126,7 @@
   margin-bottom: -2px;
 }
 
-.itinerary-item {
-  position: relative;
-  padding-left: 24px; /* leave room for the number */
-}
-
-
-.itinerary-item .number-label {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 13px;
-  font-weight: 600;
-  color: #666;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-/* Responsive tweak: collapse panel on small screens */
+/* Responsive tweak */
 @media (max-width: 800px) {
   .itinerary-panel {
     width: 200px;

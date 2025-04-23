@@ -14,25 +14,6 @@ window.setupRouting = function(map) {
   });
 };
 
-let customRouteMarkers = [];
-
-function createNumberedMarker(position, number, labelText) {
-  return new google.maps.Marker({
-    position: position,
-    label: {
-      text: number.toString(),
-      color: 'white',
-      fontWeight: 'bold'
-    },
-    map: window.map,
-    title: labelText
-  });
-}
-function clearCustomMarkers() {
-  customRouteMarkers.forEach(m => m.setMap(null));
-  customRouteMarkers = [];
-}
-
 document.addEventListener('DOMContentLoaded', () => {
   directionsService = new google.maps.DirectionsService();
   directionsRenderer = new google.maps.DirectionsRenderer({
@@ -142,7 +123,9 @@ function generateAndDisplayRoute() {
   }
 
   // Create numbered marker
-  function createNumberedMarker(position, number, title) {
+  function createNumberedMarker(position, number, title, placeId) {
+    if (!placeId) return;
+
     const marker = new google.maps.Marker({
       position,
       label: `${number}`,
@@ -150,6 +133,9 @@ function generateAndDisplayRoute() {
       title
     });
     window.customRouteMarkers.push(marker);
+
+    if (!window.markerMap) window.markerMap = {};
+    window.markerMap[placeId] = marker;
   }
 
   placeIds.forEach((id, index) => {
@@ -190,10 +176,10 @@ function generateAndDisplayRoute() {
 
             // Add numbered markers at start of each leg
             legs.forEach((leg, i) => {
-              createNumberedMarker(leg.start_location, i + 1, leg.start_address);
+              createNumberedMarker(leg.start_location, i + 1, leg.start_address, items[i]?.place_id);
 
               if (i === legs.length - 1) {
-                createNumberedMarker(leg.end_location, i + 2, leg.end_address);
+                createNumberedMarker(leg.end_location, i + 2, leg.end_address, items[items.length - 1]?.place_id);
               }
             });
 

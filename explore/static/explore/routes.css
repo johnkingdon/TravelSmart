@@ -69,3 +69,30 @@
   color: #333;
   text-align: center;
 }
+
+.pulse-marker {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background: rgba(59, 130, 246, 0.5); /* Tailwind Blue 500 w/ transparency */
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: pulse-animation 1.5s ease-out infinite;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+@keyframes pulse-animation {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.8);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
+}
