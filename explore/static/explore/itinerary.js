@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(itinerary));
 
     window.dispatchEvent(new Event('itineraryUpdated'));
+    updateItineraryNumbers();
   }
 
   function loadItinerary() {
@@ -23,6 +24,19 @@ document.addEventListener('DOMContentLoaded', () => {
         itinerary = [];
       }
     }
+  }
+
+  function updateItineraryNumbers() {
+    const cards = document.querySelectorAll('.itinerary-item');
+    cards.forEach((card, index) => {
+      let numberLabel = card.querySelector('.number-label');
+      if (!numberLabel) {
+        numberLabel = document.createElement('span');
+        numberLabel.className = 'number-label';
+        card.prepend(numberLabel);
+      }
+      numberLabel.textContent = `${index + 1}. `;
+    });
   }
 
   // ── Render a saved item ───────────────────
@@ -174,4 +188,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── Kick things off ──────────────────────
   loadItinerary();
+  updateItineraryNumbers();
 });

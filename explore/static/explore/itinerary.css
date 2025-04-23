@@ -40,13 +40,13 @@
 
 /* Each item in the list */
 .itinerary-panel .itinerary-item {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  padding: 10px 12px 10px 38px; /* leave room for number on left */
   background-color: #ffffff;
   border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  padding: 8px 12px;
+  border-radius: 6px;
   margin: 6px 0;
   cursor: move;
   transition: background-color 0.2s;
@@ -59,21 +59,21 @@
 
 /* The place name span */
 .itinerary-panel .itinerary-item span {
-  flex-grow: 1;
+  flex: 1;
   font-size: 14px;
-  color: #333333;
-  margin-right: 8px;
+  color: #333;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Remove (“×”) button */
 .itinerary-panel .itinerary-item .remove-btn {
   background: none;
   border: none;
-  font-size: 16px;
+  font-size: 25px;
   color: #a00;
   cursor: pointer;
   padding: 0 4px;
-  line-height: 1;
+  line-height: 0;
   transition: color 0.2s;
 }
 
@@ -106,6 +106,23 @@
 .itinerary-item.drop-after {
   border-bottom: 4px solid #3b82f6;
   margin-bottom: -2px;
+}
+
+.itinerary-item {
+  position: relative;
+  padding-left: 24px; /* leave room for the number */
+}
+
+
+.itinerary-item .number-label {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 13px;
+  font-weight: 600;
+  color: #666;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Responsive tweak: collapse panel on small screens */
