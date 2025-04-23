@@ -5,7 +5,12 @@ window.setupRouting = function(map) {
   directionsService = new google.maps.DirectionsService();
   directionsRenderer = new google.maps.DirectionsRenderer({
     map: map,
-    suppressMarkers: true
+    suppressMarkers: true,
+    polylineOptions: {
+      strokeColor: '#3367d6',
+      strokeOpacity: 1,
+      strokeWeight: 10
+    }
   });
 };
 
@@ -32,7 +37,12 @@ document.addEventListener('DOMContentLoaded', () => {
   directionsService = new google.maps.DirectionsService();
   directionsRenderer = new google.maps.DirectionsRenderer({
     map: map,
-    suppressMarkers: true
+    suppressMarkers: true,
+    polylineOptions: {
+      strokeColor: '#3367d6',
+      strokeOpacity: 1,
+      strokeWeight: 10
+    }
   });
 
   const routeBtn = document.getElementById('generate-route-btn');
@@ -67,7 +77,49 @@ function updateRouteButtonState() {
   }
 }
 
+function clearRoute() {
+  if (directionsRenderer) {
+    directionsRenderer.setDirections({ routes: [] });
+  }
+
+  // Clear custom route markers if you’re using them
+  if (window.customRouteMarkers) {
+    window.customRouteMarkers.forEach(marker => marker.setMap(null));
+    window.customRouteMarkers = [];
+  }
+
+  // Hide or clear route summary
+  const summaryEl = document.getElementById('route-summary');
+  if (summaryEl) {
+    summaryEl.innerHTML = '';
+    summaryEl.classList.add('hidden');
+  }
+
+  // Hide top info box
+  const infoBox = document.getElementById('route-info-box');
+  if (infoBox) {
+    infoBox.classList.add('hidden');
+  }
+
+  window.routeActive = false;
+}
+
+window.addEventListener('itineraryUpdated', () => {
+  updateRouteButtonState();
+
+  const raw = localStorage.getItem('ts_itinerary');
+  const items = raw ? JSON.parse(raw) : [];
+
+  if (items.length >= 2 && window.routeActive) {
+    generateAndDisplayRoute();
+  } else {
+    clearRoute();
+  }
+});
+
 function generateAndDisplayRoute() {
+  window.routeActive = true;
+
   const raw = localStorage.getItem('ts_itinerary');
   const items = raw ? JSON.parse(raw) : [];
 
