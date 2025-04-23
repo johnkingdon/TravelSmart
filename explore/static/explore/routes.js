@@ -5,19 +5,43 @@ window.setupRouting = function(map) {
   directionsService = new google.maps.DirectionsService();
   directionsRenderer = new google.maps.DirectionsRenderer({
     map: map,
-    suppressMarkers: false
+    suppressMarkers: true
   });
 };
+
+let customRouteMarkers = [];
+
+function createNumberedMarker(position, number, labelText) {
+  return new google.maps.Marker({
+    position: position,
+    label: {
+      text: number.toString(),
+      color: 'white',
+      fontWeight: 'bold'
+    },
+    map: window.map,
+    title: labelText
+  });
+}
+function clearCustomMarkers() {
+  customRouteMarkers.forEach(m => m.setMap(null));
+  customRouteMarkers = [];
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   directionsService = new google.maps.DirectionsService();
   directionsRenderer = new google.maps.DirectionsRenderer({
     map: map,
-    suppressMarkers: false
+    suppressMarkers: true
   });
 
   const routeBtn = document.getElementById('generate-route-btn');
-  directionsRenderer.setMap(window.map); // assumes `map` is global
+  if (window.map instanceof google.maps.Map) {
+    directionsRenderer.setMap(window.map);
+  } else {
+    console.warn("Map instance not available yet for directions rendering.");
+  }
+
 
   routeBtn.addEventListener('click', () => {
     if (!routeBtn.classList.contains('disabled')) {
@@ -49,7 +73,10 @@ function generateAndDisplayRoute() {
 
   if (items.length < 2) return;
 
-  const placeIds = items.map(item => item.place_id);
+  const placeIds = items.filter(item => item.place_id).map(item => item.place_id);
+
+  if (placeIds.length < 2) return alert("Not enough valid places to generate route.");
+
   const service = new google.maps.places.PlacesService(document.createElement('div'));
 
   const locations = [];
@@ -83,8 +110,21 @@ function generateAndDisplayRoute() {
           console.log("Directions response:", response, "Status:", status);
 
           if (status === 'OK') {
-            const legs = response.routes[0].legs;
             directionsRenderer.setDirections(response);
+
+            clearCustomMarkers();
+
+            const legs = response.routes[0].legs;
+
+            // Create numbered markers for start of each leg
+            legs.forEach((leg, i) => {
+              createNumberedMarker(leg.start_location, i + 1, leg.start_address);
+
+              // If it's the last leg, add a marker for the destination
+              if (i === legs.length - 1) {
+                createNumberedMarker(leg.end_location, i + 2, leg.end_address);
+              }
+            });
           } else {
             alert('Failed to generate route: ' + status);
           }

@@ -8,13 +8,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function saveItinerary() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(itinerary));
+
+    window.dispatchEvent(new Event('itineraryUpdated'));
   }
 
   function loadItinerary() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
-      itinerary = JSON.parse(raw);
-      itinerary.forEach(renderItineraryItem);
+      try {
+        itinerary = JSON.parse(raw).filter(item => item && item.itemId && item.name && item.place_id);
+        itinerary.forEach(renderItineraryItem);
+      } catch (e) {
+        console.error("Failed to parse itinerary from localStorage:", e);
+        itinerary = [];
+      }
     }
   }
 

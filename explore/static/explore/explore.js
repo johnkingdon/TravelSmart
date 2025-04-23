@@ -31,6 +31,7 @@ function initMap(lat = 33.7490, lng = -84.3880) {
   service    = new google.maps.places.PlacesService(map);
   infoWindow = new google.maps.InfoWindow();
 
+  window.map = map;
   window.setupRouting?.(map); // gives map to routes.js
 
   // wire up autocomplete
