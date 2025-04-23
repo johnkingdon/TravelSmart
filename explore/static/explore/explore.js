@@ -31,6 +31,8 @@ function initMap(lat = 33.7490, lng = -84.3880) {
   service    = new google.maps.places.PlacesService(map);
   infoWindow = new google.maps.InfoWindow();
 
+  window.setupRouting?.(map); // gives map to routes.js
+
   // wire up autocomplete
   const autocomplete = new google.maps.places.Autocomplete(input);
   autocomplete.bindTo('bounds', map);

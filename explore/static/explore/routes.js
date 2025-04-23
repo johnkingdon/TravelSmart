@@ -1,9 +1,20 @@
 let directionsRenderer = null;
 let directionsService = null;
 
+window.setupRouting = function(map) {
+  directionsService = new google.maps.DirectionsService();
+  directionsRenderer = new google.maps.DirectionsRenderer({
+    map: map,
+    suppressMarkers: false
+  });
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   directionsService = new google.maps.DirectionsService();
-  directionsRenderer = new google.maps.DirectionsRenderer({ suppressMarkers: false });
+  directionsRenderer = new google.maps.DirectionsRenderer({
+    map: map,
+    suppressMarkers: false
+  });
 
   const routeBtn = document.getElementById('generate-route-btn');
   directionsRenderer.setMap(window.map); // assumes `map` is global
@@ -68,11 +79,14 @@ function generateAndDisplayRoute() {
           travelMode: google.maps.TravelMode.DRIVING
         };
 
-        directionsService.route(request, (result, status) => {
+        directionsService.route(request, (response, status) => {
+          console.log("Directions response:", response, "Status:", status);
+
           if (status === 'OK') {
-            directionsRenderer.setDirections(result);
+            const legs = response.routes[0].legs;
+            directionsRenderer.setDirections(response);
           } else {
-            alert("Failed to generate route: " + status);
+            alert('Failed to generate route: ' + status);
           }
         });
       }
