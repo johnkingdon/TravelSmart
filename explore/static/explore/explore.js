@@ -7,77 +7,71 @@ let photoIndex = 0;
 let photoList = [];
 
 function initMap(lat = 33.7490, lng = -84.3880) {
-  // grab DOM elements
-  const mapDiv         = document.getElementById('map');
-  const input          = document.getElementById('autocomplete');
+  const mapDiv = document.getElementById('map');
+  const input = document.getElementById('autocomplete');
   const categorySelect = document.querySelector("select[name='category']");
 
-  // parse any existing URL params
-  const params   = new URLSearchParams(window.location.search);
-  const destParam   = params.get('destination');
+  const params = new URLSearchParams(window.location.search);
+  const destParam = params.get('destination');
   const categoryParam = params.get('category') || '';
 
-  // hide map until we search
   if (destParam) {
     mapDiv.style.visibility = 'hidden';
   }
 
-  // initialize map & services
   const defaultLocation = new google.maps.LatLng(lat, lng);
-  map = new google.maps.Map(mapDiv, {
-    center: defaultLocation,
-    zoom: 14,
-  });
-  service    = new google.maps.places.PlacesService(map);
+  map = new google.maps.Map(mapDiv, { center: defaultLocation, zoom: 14 });
+  service = new google.maps.places.PlacesService(map);
   infoWindow = new google.maps.InfoWindow();
 
   window.map = map;
-  window.setupRouting?.(map); // gives map to routes.js
+  window.setupRouting?.(map);
 
-  // wire up autocomplete
   const autocomplete = new google.maps.places.Autocomplete(input);
   autocomplete.bindTo('bounds', map);
 
   document.getElementById('explore-form').addEventListener('submit', e => {
     e.preventDefault();
     const destination = input.value.trim();
-    const category    = categorySelect.value;
+    const category = categorySelect.value;
+    const priceFilter = document.getElementById('price-filter').value;
+
     if (!destination) return alert('Please enter a destination.');
 
     const newParams = new URLSearchParams();
     newParams.set('destination', destination);
     if (category) newParams.set('category', category);
+    if (priceFilter) newParams.set('price_filter', priceFilter);
     window.history.pushState({}, '', window.location.pathname + '?' + newParams);
 
-    // run search
-    searchPlaces(destination, category);
+    searchPlaces(destination, category, priceFilter);
   });
 
-  //refresh forward backward handler
   window.addEventListener('popstate', () => {
-    const p     = new URLSearchParams(window.location.search);
-    const dest  = p.get('destination');
-    const cat   = p.get('category') || '';
+    const p = new URLSearchParams(window.location.search);
+    const dest = p.get('destination');
+    const cat = p.get('category') || '';
+    const price = p.get('price_filter') || '';
     if (dest) {
-      input.value          = dest;
+      input.value = dest;
       categorySelect.value = cat;
-      searchPlaces(dest, cat);
+      document.getElementById('price-filter').value = price;
+      searchPlaces(dest, cat, price);
     } else {
-      // no params → clear map
       clearPlaceMarkers();
       if (destinationMarker) destinationMarker.setMap(null);
     }
   });
 
   if (destParam) {
-    input.value          = destParam;
+    input.value = destParam;
     categorySelect.value = categoryParam;
-    searchPlaces(destParam, categoryParam);
+    document.getElementById('price-filter').value = params.get('price_filter') || '';
+    searchPlaces(destParam, categoryParam, params.get('price_filter'));
   } else {
     mapDiv.style.visibility = 'visible';
   }
 
-  // preserve your POI‑click handler
   map.addListener('click', event => {
     if (event.placeId) {
       event.stop();
@@ -86,7 +80,7 @@ function initMap(lat = 33.7490, lng = -84.3880) {
   });
 }
 
-function searchPlaces(query, category) {
+function searchPlaces(query, category, priceFilter = '') {
   const input = document.getElementById("autocomplete");
   const destination = input ? input.value : "";
 
@@ -98,68 +92,34 @@ function searchPlaces(query, category) {
   if (destinationMarker) destinationMarker.setMap(null);
   clearPlaceMarkers();
 
-  const request = {
-    query: destination,
-    fields: ["geometry"],
-  };
-
+  const request = { query: destination, fields: ["geometry"] };
   const placesService = new google.maps.places.PlacesService(map);
-  placesService.findPlaceFromQuery(request, function (results, status) {
+  placesService.findPlaceFromQuery(request, (results, status) => {
     if (status === google.maps.places.PlacesServiceStatus.OK && results[0]) {
       const location = results[0].geometry.location;
-
       map.setCenter(location);
-
       document.getElementById('map').style.visibility = 'visible';
-
-      destinationMarker = new google.maps.Marker({
-        map,
-        position: location,
-        title: query,
-
-        // title: "Selected Destination",
-        // icon: {
-        //   url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
-        //   scaledSize: new google.maps.Size(45, 45)
-        // }
-      });
-
-      findNearby(location, category);
+      destinationMarker = new google.maps.Marker({ map, position: location, title: query });
+      findNearby(location, category, priceFilter);
     } else {
       alert("Location not found: " + status);
     }
   });
 }
 
-function findNearby(location, category) {
-  // map our dropdown values to Places types
+function findNearby(location, category, priceFilter = '') {
   const categoryMap = {
-    food: 'restaurant',
-    cafes: 'cafe',
-    nightlife: 'bar',
-    shopping: 'shopping_mall',
-    museums: 'museum',
-    parks: 'park',
-    art: 'art_gallery',
-    hotels: 'lodging',
-    attractions: 'tourist_attraction',
-    religion: 'church',
-    entertainment: 'movie_theater'
+    food: 'restaurant', cafes: 'cafe', nightlife: 'bar', shopping: 'shopping_mall',
+    museums: 'museum', parks: 'park', art: 'art_gallery', hotels: 'lodging',
+    attractions: 'tourist_attraction', religion: 'church', entertainment: 'movie_theater'
   };
 
-  // clear any old markers
   clearPlaceMarkers();
 
-  // decide which types to search
-  const typesToSearch = category
-    ? [ categoryMap[category] ]
-    : [
-        'restaurant', 'cafe', 'park',
-        'museum', 'art_gallery',
-        'shopping_mall', 'lodging',
-        'tourist_attraction', 'church',
-        'movie_theater'
-      ];
+  const typesToSearch = category ? [ categoryMap[category] ] : [
+    'restaurant', 'cafe', 'park', 'museum', 'art_gallery',
+    'shopping_mall', 'lodging', 'tourist_attraction', 'church', 'movie_theater'
+  ];
 
   const allResults = [];
   let completed = 0;
@@ -167,19 +127,16 @@ function findNearby(location, category) {
   typesToSearch.forEach(type => {
     const request = { location, radius: 2000, type };
     const localService = new google.maps.places.PlacesService(map);
-
     localService.nearbySearch(request, (results, status) => {
-      if (status === google.maps.places.PlacesServiceStatus.OK
-          && results && results.length > 0) {
+      if (status === google.maps.places.PlacesServiceStatus.OK && results?.length) {
         allResults.push(...results);
-      } else {
-        console.warn(`No nearby places for type "${type}": ${status}`);
       }
-
       completed++;
-
       if (completed === typesToSearch.length) {
-        const unique = deduplicatePlaces(allResults);
+        let unique = deduplicatePlaces(allResults);
+        if (priceFilter) {
+          unique = unique.filter(place => place.price_level == priceFilter);
+        }
         const sampled = shuffle(unique).slice(0, 20);
         displayResults(sampled);
         sampled.forEach((place, i) => createMarker(place, i));
