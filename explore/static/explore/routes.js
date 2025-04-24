@@ -1,6 +1,8 @@
 let directionsRenderer = null;
 let directionsService = null;
 
+window.routeDurationLabels = [];
+
 window.setupRouting = function(map) {
   directionsService = new google.maps.DirectionsService();
   directionsRenderer = new google.maps.DirectionsRenderer({
@@ -79,6 +81,11 @@ function clearRoute() {
     directionsRenderer.setDirections({ routes: [] });
   }
 
+  if (window.routeDurationLabels) {
+    window.routeDurationLabels.forEach(label => label.setMap(null));
+    window.routeDurationLabels = [];
+  }
+
   // Clear custom route markers if you’re using them
   if (window.customRouteMarkers) {
     window.customRouteMarkers.forEach(marker => marker.setMap(null));
@@ -117,7 +124,69 @@ window.addEventListener('itineraryUpdated', () => {
   }
 });
 
+function getPolylineMidpoint(leg) {
+  const path = [];
+
+  leg.steps.forEach(step => {
+    const decoded = google.maps.geometry.encoding.decodePath(step.polyline.points);
+    path.push(...decoded);
+  });
+
+  if (path.length === 0) return leg.start_location;
+
+  const midIndex = Math.floor(path.length / 2);
+  return path[midIndex];
+}
+
+function createDurationOverlay(position, text) {
+  const div = document.createElement('div');
+  div.className = 'duration-label';
+  div.textContent = `⏱ ${text}`;
+
+  const overlay = new google.maps.OverlayView();
+  overlay.onAdd = function () {
+    const panes = this.getPanes();
+    panes.overlayLayer.appendChild(div);
+  };
+  overlay.draw = function () {
+    const projection = this.getProjection();
+    const point = projection.fromLatLngToDivPixel(position);
+    if (point) {
+      div.style.left = point.x + 'px';
+      div.style.top = point.y + 'px';
+    }
+  };
+  overlay.onRemove = function () {
+    div.remove();
+  };
+  overlay.setMap(window.map);
+
+  window.routeDurationLabels.push(overlay);
+}
+
+function addDurationLabel(leg) {
+  /*
+  const midpoint = getPolylineMidpoint(leg);
+  const duration = leg.duration.text;
+
+  const label = new google.maps.InfoWindow({
+    content: `<div style="font-weight:bold; font-size:12px;">⏱ ${duration}</div>`,
+    position: midpoint,
+    pixelOffset: new google.maps.Size(0, -10),
+  });
+
+  label.open(window.map);
+  window.routeDurationLabels.push(label);
+   */
+
+  window.routeDurationLabels.forEach(label => label.setMap(null));
+  window.routeDurationLabels = [];
+
+  createDurationOverlay(getPolylineMidpoint(leg), leg.duration.text);
+}
+
 function generateAndDisplayRoute(optimize = false) {
+  window.routeDurationLabels = window.routeDurationLabels || [];
   window.routeActive = true;
   document.getElementById('clear-route-btn').classList.remove('hidden');
 
@@ -140,6 +209,11 @@ function generateAndDisplayRoute(optimize = false) {
   function clearCustomMarkers() {
     window.customRouteMarkers.forEach(marker => marker.setMap(null));
     window.customRouteMarkers = [];
+  }
+
+  if (window.routeDurationLabels) {
+    window.routeDurationLabels.forEach(label => label.setMap(null));
+    window.routeDurationLabels = [];
   }
 
   // Create numbered marker
@@ -206,12 +280,17 @@ function generateAndDisplayRoute(optimize = false) {
 
             const legs = response.routes[0].legs;
 
-            // Add numbered markers at start of each leg
             legs.forEach((leg, i) => {
               createNumberedMarker(leg.start_location, i + 1, leg.start_address, items[i]?.place_id);
-
               if (i === legs.length - 1) {
                 createNumberedMarker(leg.end_location, i + 2, leg.end_address, items[items.length - 1]?.place_id);
+              }
+
+              // ➕ Add duration label at midpoint of this leg
+              const steps = leg.steps;
+              if (steps && steps.length > 0) {
+                const midpoint = steps[Math.floor(steps.length / 2)].start_location;
+                createDurationOverlay(midpoint, leg.duration.text);
               }
             });
 
