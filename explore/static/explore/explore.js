@@ -220,6 +220,7 @@ function createMarker(place, index = 0) {
   });
 
   placeMarkers.push(marker);
+  place.__marker = marker;
 
   // Animate pulse-in using opacity only (avoids icon errors)
   setTimeout(() => {
@@ -369,6 +370,20 @@ function displayResults(results) {
 
     resultsDiv.appendChild(el);
 
+    el.addEventListener("mouseenter", () => {
+      if (place.__marker) {
+        place.__marker.setAnimation(google.maps.Animation.BOUNCE);
+        setTimeout(() => {
+          place.__marker.setAnimation(null);
+        }, 500); // Bounce once or twice
+      }
+    });
+
+    el.addEventListener("mouseleave", () => {
+      if (place.__marker) {
+        place.__marker.setAnimation(null); // Just in case
+      }
+    });
 
     window.dispatchEvent(new CustomEvent('placeCard', {
       detail: { el, place }
