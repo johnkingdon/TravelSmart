@@ -135,7 +135,8 @@ function findNearby(location, category, priceFilter = '') {
       if (completed === typesToSearch.length) {
         let unique = deduplicatePlaces(allResults);
         if (priceFilter) {
-          unique = unique.filter(place => place.price_level == priceFilter);
+          console.log(unique);
+          unique = unique.filter(place => place.price_level == priceFilter || (priceFilter == 1 && place.prince_level == null));
         }
         const sampled = shuffle(unique).slice(0, 20);
         displayResults(sampled);
@@ -144,7 +145,6 @@ function findNearby(location, category, priceFilter = '') {
     });
   });
 }
-
 
 function deduplicatePlaces(places) {
   const seen = new Set();
