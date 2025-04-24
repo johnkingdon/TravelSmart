@@ -134,6 +134,12 @@ document.addEventListener('DOMContentLoaded', () => {
     div.querySelector('.remove-btn').onclick = () =>
       removeItineraryItem(item.itemId);
 
+    div.addEventListener('click', () => {
+      if (placeId) {
+        showPlaceDetails(placeId);
+      }
+    });
+
     // reorder handlers
     div.addEventListener('dragstart', dragStart);
     div.addEventListener('dragover', e => {

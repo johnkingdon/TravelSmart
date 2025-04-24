@@ -281,9 +281,9 @@ function generateAndDisplayRoute(optimize = false) {
             const legs = response.routes[0].legs;
 
             legs.forEach((leg, i) => {
-              createNumberedMarker(leg.start_location, i + 1, leg.start_address, items[i]?.place_id);
+              createNumberedMarker(leg.start_location, i + 1, items[i]?.name, items[i]?.place_id);
               if (i === legs.length - 1) {
-                createNumberedMarker(leg.end_location, i + 2, leg.end_address, items[items.length - 1]?.place_id);
+                createNumberedMarker(leg.end_location, i + 2, items[items.length - 1]?.name, items[items.length - 1]?.place_id);
               }
 
               // ➕ Add duration label at midpoint of this leg
