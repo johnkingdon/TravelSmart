@@ -406,7 +406,7 @@ function showPlaceDetails(placeId) {
   const service = new google.maps.places.PlacesService(document.createElement('div'));
   service.getDetails({
     placeId,
-    fields: ['name', 'formatted_address', 'rating', 'price_level', 'website', 'photos', 'reviews', 'types', 'business_status', 'user_ratings_total']
+    fields: ['name', 'formatted_address', 'rating', 'price_level', 'website', 'photos', 'reviews', 'types', 'business_status', 'user_ratings_total', 'place_id', 'formatted_address']
   }, (place, status) => {
     if (status !== google.maps.places.PlacesServiceStatus.OK || !place) return;
 

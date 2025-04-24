@@ -44,11 +44,22 @@ document.addEventListener('DOMContentLoaded', () => {
   const STORAGE_KEY = 'ts_itinerary';
 
   function saveItinerary() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(itinerary));
+    // Persist full itinerary item info (with address, rating, category, price_level, etc.)
+    const cleaned = itinerary.map(item => ({
+      itemId: item.itemId,
+      place_id: item.place_id,
+      name: item.name,
+      address: item.address || 'Address not available',
+      rating: item.rating || null,
+      price_level: item.price_level || null,
+      category: item.category || ''
+    }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(cleaned));
 
     window.dispatchEvent(new Event('itineraryUpdated'));
     updateItineraryNumbers();
   }
+
 
   function loadItinerary() {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -165,21 +176,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── Add new from a place object ──────────
   function addItineraryItem(place) {
-  const item = {
-    itemId: Date.now().toString() + Math.random().toString(36).substr(2,6),
-    place_id: place.place_id,
-    name: place.name
-  };
-  itinerary.push(item);
-  renderItineraryItem(item);
-  saveItinerary();
+    const item = {
+      itemId: Date.now().toString() + Math.random().toString(36).substr(2,6),
+      place_id: place.place_id,
+      name: place.name || 'Unnamed Place',
+      address: place.formatted_address || place.vicinity || 'Address not available',
+      category: place.types ? place.types[0] : '',
+      rating: place.rating,
+      price_level: place.price_level
+    };
+    itinerary.push(item);
+    renderItineraryItem(item);
+    saveItinerary();
 
-  // ✅ Log the added item:
-  const destination = place.name;
-  const category = place.types ? place.types[0] : '';            // Handles category if available
-  const priceFilter = place.price_level ?? '';                   // Handles price_level if available
-  saveItineraryLog(destination, category, priceFilter);
-}
+    // ✅ Log the added item:
+    const destination = place.name;
+    const category = place.types ? place.types[0] : '';            // Handles category if available
+    const priceFilter = place.price_level ?? '';                   // Handles price_level if available
+    saveItineraryLog(destination, category, priceFilter);
+  }
+
+  const addToItineraryService = new google.maps.places.PlacesService(document.createElement('div'));
+  function addToItineraryFromPlaceId(placeId) {
+    addToItineraryService.getDetails({
+      placeId,
+      fields: ['name', 'formatted_address', 'rating', 'price_level', 'types', 'place_id']
+    }, (place, status) => {
+      if (status === google.maps.places.PlacesServiceStatus.OK && place) {
+        addItineraryItem(place);
+      } else {
+        alert("Could not load details for selected place.");
+      }
+    });
+  }
 
   // ── Remove by its unique id ──────────────
   function removeItineraryItem(itemId) {
@@ -243,7 +272,21 @@ document.addEventListener('DOMContentLoaded', () => {
   listEl.addEventListener('drop', e => {
     e.preventDefault();
     const raw = e.dataTransfer.getData('application/json');
-    if (raw) addItineraryItem(JSON.parse(raw));
+    if (raw) {
+      const dropped = JSON.parse(raw);
+
+      const service = new google.maps.places.PlacesService(document.createElement('div'));
+      service.getDetails({
+        placeId: dropped.place_id,
+        fields: ['name', 'formatted_address', 'rating', 'price_level', 'types', 'place_id']
+      }, (place, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK) {
+          addItineraryItem(place);
+        } else {
+          alert("Failed to fetch details for dropped place.");
+        }
+      });
+    }
   });
 
   // ── Wire up new cards from explore.js ────
@@ -273,18 +316,94 @@ document.addEventListener('DOMContentLoaded', () => {
   if (downloadButton && itineraryList) {
     downloadButton.addEventListener('click', () => {
       const trash = document.getElementById('itinerary-trash');
-      trash.style.display = 'none';  // hide the trash can so it doesn't show up in the PDF
+      trash.style.display = 'none';
 
-      // Create a clone of the itinerary list and add a title + date
-      const pdfContent = document.createElement('div');
+      const raw = localStorage.getItem('ts_itinerary');
+      const items = raw ? JSON.parse(raw) : [];
+
+      const container = document.createElement('div');
+      container.style.fontFamily = 'Arial, sans-serif';
+      container.style.padding = '40px';
+      container.style.color = '#333';
+
+      // Title
       const title = document.createElement('h1');
-      title.textContent = "My Itinerary";
+      title.textContent = 'My Itinerary';
+      title.style.textAlign = 'center';
+      title.style.fontSize = '32px';
+      title.style.marginBottom = '10px';
+      container.appendChild(title);
+
+      // Date
       const date = document.createElement('p');
       date.textContent = `Generated on: ${new Date().toLocaleDateString()}`;
-      pdfContent.appendChild(title);
-      pdfContent.appendChild(date);
-      pdfContent.appendChild(itineraryList.cloneNode(true));  // clone so the original DOM isn't changed
+      date.style.textAlign = 'center';
+      date.style.marginBottom = '30px';
+      date.style.color = '#666';
+      container.appendChild(date);
 
+      // Route Summary
+      const summaryBox = document.createElement('div');
+      summaryBox.style.border = '1px solid #ccc';
+      summaryBox.style.borderRadius = '8px';
+      summaryBox.style.padding = '15px';
+      summaryBox.style.marginBottom = '30px';
+      summaryBox.style.backgroundColor = '#f9f9f9';
+      summaryBox.innerHTML = `
+        <strong>Route Summary</strong><br>
+        ⏱️ Estimated Time: 37.5 mins<br>
+        🛣️ Distance: 9.4 mi<br>
+        ⛽ Estimated Gas Cost: $1.26
+      `;
+      container.appendChild(summaryBox);
+
+      // Destination List
+      const listBox = document.createElement('div');
+      listBox.style.border = '1px solid #ddd';
+      listBox.style.borderRadius = '10px';
+      listBox.style.padding = '25px';
+      listBox.style.backgroundColor = '#fbfbfb';
+
+      items.forEach((item, index) => {
+        const itemBox = document.createElement('div');
+        itemBox.style.display = 'flex';
+        itemBox.style.alignItems = 'center';
+        itemBox.style.marginBottom = index === items.length - 1 ? '0px' : '20px';
+
+        const badge = document.createElement('div');
+        badge.textContent = `${index + 1}`;
+        badge.style.width = '28px';
+        badge.style.height = '28px';
+        badge.style.borderRadius = '50%';
+        badge.style.backgroundColor = '#3367d6';
+        badge.style.color = 'white';
+        badge.style.display = 'flex';
+        badge.style.justifyContent = 'center';
+        badge.style.alignItems = 'center';
+        badge.style.fontWeight = 'bold';
+        badge.style.marginRight = '12px';
+        itemBox.appendChild(badge);
+
+        const name = document.createElement('div');
+        name.textContent = item.name;
+        name.style.fontWeight = '600';
+
+        itemBox.appendChild(name);
+        listBox.appendChild(itemBox);
+      });
+
+      container.appendChild(listBox);
+
+      // Footer
+      const footer = document.createElement('p');
+      footer.textContent = 'Generated using TravelSmart | www.travelsmart.com';
+      footer.style.fontSize = '10px';
+      footer.style.color = '#aaa';
+      footer.style.textAlign = 'center';
+      footer.style.marginTop = '40px';
+      container.appendChild(footer);
+
+      // PDF Options
       const options = {
         margin: 0.5,
         filename: 'my_itinerary.pdf',
@@ -293,10 +412,10 @@ document.addEventListener('DOMContentLoaded', () => {
         jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
       };
 
-      html2pdf().set(options).from(pdfContent).save()
+      html2pdf().set(options).from(container).save()
         .finally(() => {
-          trash.style.display = 'block';  // show trash can again after PDF is generated
+          trash.style.display = 'block';
         });
     });
   }
-}); // booya
+});
