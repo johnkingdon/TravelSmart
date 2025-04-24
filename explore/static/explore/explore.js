@@ -6,6 +6,43 @@ let placeMarkers = [];
 let photoIndex = 0;
 let photoList = [];
 
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+function saveItineraryLog(destination, category, priceFilter) {
+  fetch('/save-itinerary/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'X-CSRFToken': getCookie('csrftoken')
+    },
+    body: new URLSearchParams({
+      destination: destination,
+      category: category,
+      price_filter: priceFilter
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('Itinerary log saved:', data);
+  })
+  .catch(error => {
+    console.error('Error saving itinerary log:', error);
+  });
+}
+
 function initMap(lat = 33.7490, lng = -84.3880) {
   const mapDiv = document.getElementById('map');
   const input = document.getElementById('autocomplete');
@@ -45,6 +82,7 @@ function initMap(lat = 33.7490, lng = -84.3880) {
     window.history.pushState({}, '', window.location.pathname + '?' + newParams);
 
     searchPlaces(destination, category, priceFilter);
+    saveItineraryLog(destination, category, priceFilter);
   });
 
   window.addEventListener('popstate', () => {

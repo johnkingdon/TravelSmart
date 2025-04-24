@@ -1,6 +1,43 @@
 // itinerary.js
 console.log('🛠️ itinerary.js loaded');
 
+function saveItineraryLog(destination, category, priceFilter) {
+  fetch('/save-itinerary/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'X-CSRFToken': getCookie('csrftoken')
+    },
+    body: new URLSearchParams({
+      destination: destination,
+      category: category,
+      price_filter: priceFilter
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    console.log('Itinerary log saved:', data);
+  })
+  .catch(error => {
+    console.error('Error saving itinerary log:', error);
+  });
+}
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   // ── State & Persistence ───────────────────
   let itinerary = [];
@@ -128,15 +165,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── Add new from a place object ──────────
   function addItineraryItem(place) {
-    const item = {
-      itemId: Date.now().toString() + Math.random().toString(36).substr(2,6),
-      place_id: place.place_id,
-      name: place.name
-    };
-    itinerary.push(item);
-    renderItineraryItem(item);
-    saveItinerary();
-  }
+  const item = {
+    itemId: Date.now().toString() + Math.random().toString(36).substr(2,6),
+    place_id: place.place_id,
+    name: place.name
+  };
+  itinerary.push(item);
+  renderItineraryItem(item);
+  saveItinerary();
+
+  // ✅ Log the added item:
+  const destination = place.name;
+  const category = place.types ? place.types[0] : '';            // Handles category if available
+  const priceFilter = place.price_level ?? '';                   // Handles price_level if available
+  saveItineraryLog(destination, category, priceFilter);
+}
 
   // ── Remove by its unique id ──────────────
   function removeItineraryItem(itemId) {
@@ -210,7 +253,12 @@ document.addEventListener('DOMContentLoaded', () => {
     el.addEventListener('dragstart', ev => {
       ev.dataTransfer.setData(
         'application/json',
-        JSON.stringify({ place_id: place.place_id, name: place.name })
+        JSON.stringify({
+          place_id: place.place_id,
+          name: place.name,
+          types: place.types,
+          price_level: place.price_level
+        })
       );
     });
   });
