@@ -266,4 +266,37 @@ document.addEventListener('DOMContentLoaded', () => {
   // ── Kick things off ──────────────────────
   loadItinerary();
   updateItineraryNumbers();
+
+  const downloadButton = document.getElementById('download-itinerary-pdf');
+  const itineraryList = document.getElementById('itinerary-list');
+
+  if (downloadButton && itineraryList) {
+    downloadButton.addEventListener('click', () => {
+      const trash = document.getElementById('itinerary-trash');
+      trash.style.display = 'none';  // hide the trash can so it doesn't show up in the PDF
+
+      // Create a clone of the itinerary list and add a title + date
+      const pdfContent = document.createElement('div');
+      const title = document.createElement('h1');
+      title.textContent = "My Itinerary";
+      const date = document.createElement('p');
+      date.textContent = `Generated on: ${new Date().toLocaleDateString()}`;
+      pdfContent.appendChild(title);
+      pdfContent.appendChild(date);
+      pdfContent.appendChild(itineraryList.cloneNode(true));  // clone so the original DOM isn't changed
+
+      const options = {
+        margin: 0.5,
+        filename: 'my_itinerary.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+
+      html2pdf().set(options).from(pdfContent).save()
+        .finally(() => {
+          trash.style.display = 'block';  // show trash can again after PDF is generated
+        });
+    });
+  }
 });

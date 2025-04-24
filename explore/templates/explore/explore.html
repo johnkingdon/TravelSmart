@@ -77,6 +77,7 @@
         <p class="empty-text">Drag destinations here</p>
       </div>
       <div id="itinerary-trash" class="itinerary-trash" title="Drop here to remove">🗑️</div>
+        <button id="download-itinerary-pdf" class="btn">Download Itinerary as PDF</button>
     </div>
 
   </div>
@@ -91,4 +92,5 @@
     defer
     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDF4ATm4jiTrHA8uB8b5AG9Q-84OsOzoBU&libraries=places&callback=initMap"
   ></script>
+    <script src="{% static 'explore/libs/html2pdf.bundle.min.js' %}"></script>
 {% endblock %}
