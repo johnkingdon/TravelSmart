@@ -109,6 +109,7 @@ function clearRoute() {
   document.getElementById('clear-route-btn').classList.add('hidden');
   //document.getElementById('optimize-route-btn').classList.add('hidden');
   updateRouteButtonState()
+  localStorage.removeItem('ts_route_summary');
 }
 
 window.addEventListener('itineraryUpdated', () => {
@@ -308,15 +309,28 @@ function generateAndDisplayRoute(optimize = false) {
             const gasPrice = 3.5;
             const gasCost = (totalMiles / mpg) * gasPrice;
 
+            const totalDistanceMiles = totalMiles.toFixed(2);
+            const totalDurationMins = (totalTime / 60).toFixed(1);
+            const estimatedGasCost = gasCost.toFixed(2);
+
             // Update summary box
             const infoBox = document.getElementById('route-info-box');
             infoBox.classList.remove('hidden');
             infoBox.innerHTML = `
-              <div class="title">Route Summary</div>
-              🚗 <strong>Distance:</strong> ${totalMiles.toFixed(2)} mi<br>
-              ⏱️ <strong>Time:</strong> ${(totalTime / 60).toFixed(1)} mins<br>
-              ⛽ <strong>Estimated Gas Cost:</strong> $${gasCost.toFixed(2)}
+              <div id="route-summary-box">
+                <div class="title">Route Summary</div>
+                🚗 <strong>Distance:</strong> ${totalDistanceMiles} mi<br>
+                ⏱️ <strong>Time:</strong> ${totalDurationMins} mins<br>
+                ⛽ <strong>Estimated Gas Cost:</strong> $${estimatedGasCost}
+              </div>
             `;
+
+            localStorage.setItem('ts_route_summary', JSON.stringify({
+              distance: `${totalDistanceMiles} mi`,
+              duration: `${totalDurationMins} mins`,
+              gasCost: `$${estimatedGasCost}`,
+              waypointCount: itinerary.length
+            }));
 
             //document.getElementById('optimize-route-btn').classList.remove('hidden');
             updateRouteButtonState()

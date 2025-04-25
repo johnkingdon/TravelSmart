@@ -134,10 +134,9 @@ document.addEventListener('DOMContentLoaded', () => {
     div.querySelector('.remove-btn').onclick = () =>
       removeItineraryItem(item.itemId);
 
-    div.addEventListener('click', () => {
-      if (placeId) {
-        showPlaceDetails(placeId);
-      }
+    div.addEventListener('click', (e) => {
+      if (e.target.closest('.remove-btn')) return; // ignore clicks on the ❌
+      if (placeId) showPlaceDetails(placeId);
     });
 
     // reorder handlers
@@ -327,6 +326,11 @@ document.addEventListener('DOMContentLoaded', () => {
       const raw = localStorage.getItem('ts_itinerary');
       const items = raw ? JSON.parse(raw) : [];
 
+      if (!items.length) {
+        alert("You must add at least one destination before downloading your itinerary.");
+        return;
+      }
+
       const container = document.createElement('div');
       container.style.fontFamily = 'Arial, sans-serif';
       container.style.padding = '40px';
@@ -355,13 +359,32 @@ document.addEventListener('DOMContentLoaded', () => {
       summaryBox.style.padding = '15px';
       summaryBox.style.marginBottom = '30px';
       summaryBox.style.backgroundColor = '#f9f9f9';
-      summaryBox.innerHTML = `
-        <strong>Route Summary</strong><br>
-        ⏱️ Estimated Time: 37.5 mins<br>
-        🛣️ Distance: 9.4 mi<br>
-        ⛽ Estimated Gas Cost: $1.26
-      `;
-      container.appendChild(summaryBox);
+
+      //const routeRaw = localStorage.getItem('ts_route_summary');
+      //const route = routeRaw ? JSON.parse(routeRaw) : null;
+      const summaryElement = document.getElementById('route-summary-box');
+      const isRouteVisible = summaryElement && summaryElement.offsetParent !== null;
+
+      if (isRouteVisible) {
+        const routeRaw = localStorage.getItem('ts_route_summary');
+        const route = routeRaw ? JSON.parse(routeRaw) : null;
+
+        if (route) {
+          const summaryBox = document.createElement('div');
+          summaryBox.style.border = '1px solid #ccc';
+          summaryBox.style.borderRadius = '8px';
+          summaryBox.style.padding = '15px';
+          summaryBox.style.marginBottom = '30px';
+          summaryBox.style.backgroundColor = '#f9f9f9';
+          summaryBox.innerHTML = `
+            <strong>Route Summary</strong><br>
+            ⏱️ Estimated Time: ${route.duration}<br>
+            🛣️ Distance: ${route.distance}<br>
+            ⛽ Estimated Gas Cost: ${route.gasCost}
+          `;
+          container.appendChild(summaryBox);
+        }
+      }
 
       // Destination List
       const listBox = document.createElement('div');
