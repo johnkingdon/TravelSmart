@@ -1,0 +1,142 @@
+
+/* =======================
+   Route Button Styling
+   ======================= */
+.route-btn {
+  padding: 12px 60px;
+  width: 300px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(to right, #4f46e5, #3b82f6);
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  text-align: center;
+}
+
+.route-btn:hover:not(.disabled) {
+  background: linear-gradient(to right, #3b82f6, #2563eb);
+  transform: translateY(-2px);
+}
+
+.route-btn.disabled {
+  background: #ccc;
+  color: #555;
+  cursor: not-allowed;
+}
+
+.route-btn.disabled:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+#route-info-box {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  padding: 14px 20px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  z-index: 10;
+  width: 260px;
+  text-align: left;
+  transition: all 0.3s ease;
+}
+
+#route-info-box .title {
+  font-weight: bold;
+  font-size: 16px;
+  color: #333;
+  text-align: center;
+}
+
+.pulse-marker {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  background: rgba(59, 130, 246, 0.5); /* Tailwind Blue 500 w/ transparency */
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: pulse-animation 1.5s ease-out infinite;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+@keyframes pulse-animation {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.8);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0;
+  }
+}
+
+.route-btn.danger {
+  background: linear-gradient(to right, #e74c3c, #c0392b);
+}
+
+.route-btn.hidden {
+  display: none;
+}
+
+.route-btn-wrapper {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  z-index: 20;
+}
+
+.route-btn.danger:hover {
+  background: linear-gradient(to right, #c0392b, #a93226);
+}
+
+.route-btn.secondary {
+  background: linear-gradient(to right, #10b981, #059669);
+}
+
+.route-btn.secondary:hover {
+  background: linear-gradient(to right, #059669, #047857);
+}
+
+.duration-label {
+  position: absolute;
+  background: white;
+  padding: 3px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid #999;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 9999;
+}

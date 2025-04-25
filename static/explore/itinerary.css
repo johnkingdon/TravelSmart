@@ -1,0 +1,134 @@
+/* ===================================================================================
+   My Itinerary Panel Styles (Updated for Visual Consistency)
+   =================================================================================== */
+
+/* Container panel */
+.itinerary-panel {
+  width: 320px;
+  background-color: #ffffff;
+  border-left: 1px solid #dddddd;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -2px 0 4px rgba(0,0,0,0.05);
+}
+
+/* Title bar */
+.itinerary-panel .itinerary-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  padding: 20px 0 0 0;
+  color: #111;
+  background-color: #f9f9f9;
+  text-align: center;
+}
+
+/* Scrollable list area */
+.itinerary-panel .itinerary-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+  background-color: #f9f9f9;
+}
+
+/* Placeholder when empty */
+.itinerary-panel .empty-text {
+  margin: 40px 0 0;
+  text-align: center;
+  color: #888888;
+  font-style: italic;
+}
+
+/* Each item in the list */
+.itinerary-panel .itinerary-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 14px 56px;
+  background-color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  margin: 10px 0;
+  cursor: move;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+/* Hover effect */
+.itinerary-panel .itinerary-item:hover {
+  background-color: #f9fafe;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+
+/* Place name text */
+.itinerary-panel .itinerary-item span {
+  flex-grow: 1;
+  font-size: 15px;
+  font-weight: 500;
+  color: #222;
+  margin-right: 10px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Number badge */
+.itinerary-panel .itinerary-item .number-label {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #f2f4f7;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Remove ("×") button */
+.itinerary-panel .itinerary-item .remove-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #a00;
+  cursor: pointer;
+  padding: 0 6px;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.itinerary-panel .itinerary-item .remove-btn:hover {
+  color: #e00;
+}
+
+/* Trash‑can drop zone */
+.itinerary-panel .itinerary-trash {
+  padding: 10px;
+  text-align: center;
+  border-top: 1px solid #dddddd;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.itinerary-panel .itinerary-trash.dragover {
+  background-color: #ffe6e6;
+}
+
+/* Drag-drop horizontal bar */
+.itinerary-item.drop-before {
+  border-top: 4px solid #3b82f6;
+  margin-top: -2px;
+}
+
+.itinerary-item.drop-after {
+  border-bottom: 4px solid #3b82f6;
+  margin-bottom: -2px;
+}
+
+/* Responsive tweak */
+@media (max-width: 800px) {
+  .itinerary-panel {
+    width: 200px;
+  }
+}

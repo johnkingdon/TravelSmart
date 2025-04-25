@@ -1,0 +1,439 @@
+/* ------------------ Layout & Reset ------------------ */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+  overflow: hidden;
+  background: white;
+}
+
+/* ------------------ Navbar ------------------ */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #2f2f2f;
+  color: white;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  font-size: 1.1rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: inherit;
+}
+
+.logo:hover {
+  text-decoration: none;
+  color: inherit;
+}
+
+.logo-text {
+  font-weight: bold;
+  font-size: 1.4rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.logo img {
+  height: 36px;
+  width: 36px;
+}
+
+/*.nav-links {*/
+/*  list-style: none;*/
+/*  display: flex;*/
+/*  gap: 1.25rem;*/
+/*}*/
+
+/*.nav-links a {*/
+/*  background: linear-gradient(to right, #4f46e5, #3b82f6);*/
+/*  color: white;*/
+/*  text-decoration: none;*/
+/*  font-weight: 600;*/
+/*  padding: 0.5rem 1.25rem;*/
+/*  border-radius: 999px;*/
+/*  transition: background 0.3s ease, transform 0.2s ease;*/
+/*}*/
+
+/*.nav-links a:hover {*/
+/*  background: linear-gradient(to right, #3b82f6, #2563eb);*/
+/*  transform: translateY(-1px);*/
+/*}*/
+
+.auth-buttons {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0.45rem 1rem;
+  border-radius: 999px;
+}
+
+.auth-buttons a,
+.auth-buttons button {
+  background: linear-gradient(to right, #4f46e5, #3b82f6);
+  color: white;
+  border: none;
+  border-radius: 999px;
+  padding: 0.5rem 1.2rem;
+  font-weight: bold;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.auth-buttons a:hover,
+.auth-buttons button:hover {
+  background: linear-gradient(to right, #3b82f6, #2563eb);
+  transform: translateY(-1px);
+}
+
+.user-name {
+  color: white;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-right: 0.25rem;
+}
+
+/* ------------------ Buttons ------------------ */
+.btn, .button, .cta-button {
+  background: linear-gradient(to right, #4f46e5, #3b82f6);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  display: inline-block;
+}
+
+.btn:hover, .button:hover, .cta-button:hover {
+  background: linear-gradient(to right, #3b82f6, #2563eb);
+  transform: translateY(-2px);
+}
+
+/* ------------------ Hero Section ------------------ */
+.hero-wrapper {
+  position: relative;
+  display: flex;
+  height: calc(100vh - 84px); /* navbar offset */
+  background: white;
+  overflow: hidden;
+}
+
+.hero-text {
+  flex: 0.7;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+  z-index: 2;
+  background: white;
+}
+
+.hero-heading {
+  font-size: 3rem;
+  text-align: center;
+  transition: transform 0.3s ease;
+  line-height: 1.2;
+}
+
+.hero-heading-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.hero-heading-link:hover .hero-heading {
+  transform: scale(1.2);
+}
+
+.hero-text-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.hero-inspiration {
+  margin-top: 2.5rem;
+}
+
+#inspiration-link {
+  font-size: 1.5rem;
+  line-height: 1.2;
+  text-decoration: none;
+  color: inherit;
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+#inspiration-link:hover {
+  transform: scale(1.2);
+}
+
+.hero-image-container {
+  position: relative;
+  flex: 1.3;
+  display: flex;
+  justify-content: flex-end;
+  align-items: stretch;
+  height: 100%;
+  overflow: hidden;
+}
+
+.hero-img {
+  height: 100%;
+  width: auto;
+  object-fit: cover;
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+.collage {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+/*.fade-overlay {*/
+/*  position: absolute;*/
+/*  top: 0;*/
+/*  left: 35%; !* This is where the image starts *!*/
+/*  height: 100%;*/
+/*  width: 150px; !* how far it fades into the image *!*/
+/*  background: linear-gradient(to right, white, rgba(255, 255, 255, 0));*/
+/*  z-index: 3;*/
+/*  pointer-events: none;*/
+/*}*/
+
+
+/* ------------------ Structure Containers ------------------ */
+.page-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.content-wrap {
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ---------- Auth Pages ---------- */
+.auth-wrapper, .form-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 72px);
+  padding: 2rem;
+}
+
+.auth-card, .form-card {
+  background: white;
+  padding: 3rem;
+  border-radius: 20px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+  text-align: center;
+}
+
+.auth-title, .form-card h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+}
+
+.auth-field, .form-group {
+  text-align: left;
+  margin-bottom: 1.25rem;
+}
+
+.auth-field label, .form-group label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.auth-field input, .form-group input {
+  width: 100%;
+  padding: 0.9rem 1.1rem;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  font-size: 1.05rem;
+}
+
+.auth-field input:focus, .form-group input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.form-error {
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.full-width {
+  width: 100%;
+  display: block;
+  margin-top: 1rem;
+  background: linear-gradient(to right, #6366f1, #3b82f6);
+  color: white;
+  padding: 0.85rem 1rem;
+  border-radius: 999px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.full-width:hover {
+  background: linear-gradient(to right, #4f46e5, #2563eb);
+}
+
+.small-btn {
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+/* ------------------ Notification Bell & Dot ------------------ */
+.nav-icon {
+  display: inline-block;
+  margin-left: 1rem;
+  position: relative;
+}
+
+.bell-icon {
+  width: 24px;
+  height: 24px;
+  filter: grayscale(20%);
+  transition: transform 0.2s ease;
+  vertical-align: middle;
+}
+
+.bell-icon:hover {
+  transform: scale(1.1);
+  filter: brightness(1.2);
+}
+
+.notification-dot {
+  position: absolute;
+  top: 5px;
+  right: 18px;
+  height: 10px;
+  width: 10px;
+  background-color: red;
+  border-radius: 50%;
+}
+
+/* ------------------ Announcements Section ------------------ */
+.announcements-section {
+  background-color: #f9f9f9;
+  padding: 2rem;
+  margin: 2rem auto;
+  max-width: 800px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.announcements-title {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: #333;
+  text-align: center;
+}
+
+.announcements-list {
+  list-style: none;
+  padding: 0;
+}
+
+.announcement-item {
+  border-bottom: 1px solid #ddd;
+  padding: 1rem 0;
+}
+
+.announcement-item h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.2rem;
+  color: #0077cc;
+}
+
+.announcement-item p {
+  margin: 0 0 0.5rem;
+  color: #555;
+}
+
+.announcement-item small {
+  color: #999;
+}
+
+/* ------------------ Dismiss Button ------------------ */
+.dismiss-btn {
+  margin-top: 0.5rem;
+  background-color: #3b82f6; /* blue-ish button */
+  color: white;              /* white text */
+  padding: 0.3rem 0.75rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.dismiss-btn:hover {
+  background-color: #2563eb; /* darker on hover */
+}
+
+/* ------------------ Collage ------------------ */
+.collage {
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+
+.collage-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: auto;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1.5s ease-in-out;
+  z-index: 1;
+}
+
+.collage-img.active {
+  opacity: 1;
+  z-index: 2;
+}
