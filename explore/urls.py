@@ -3,5 +3,5 @@ from . import views
 
 urlpatterns = [
     path('', views.explore, name='explore'),
-    path('save-itinerary/', views.save_itinerary, name='save_itinerary'),  # <-- ADD THIS
+    path('log-itinerary-download/', views.log_itinerary_download, name='log_itinerary_download'),
 ]

@@ -331,6 +331,19 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      // Add download to itinerary log in admin panel
+      const destinationRaw = localStorage.getItem('ts_destination');
+      fetch('/explore/log-itinerary-download/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: new URLSearchParams({
+          destination: items[0]?.name || 'Unknown'
+        })
+      });
+
       const container = document.createElement('div');
       container.style.fontFamily = 'Arial, sans-serif';
       container.style.padding = '40px';

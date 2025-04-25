@@ -1,8 +1,8 @@
 from django.contrib import admin
-from .models import ItineraryLog
+from .models import ItineraryDownloadLog
 
-@admin.register(ItineraryLog)
-class ItineraryLogAdmin(admin.ModelAdmin):
-    list_display = ('user', 'destination', 'category', 'price_level', 'timestamp')
-    list_filter = ('category', 'price_level', 'timestamp')
-    search_fields = ('destination', 'user__username')
+@admin.register(ItineraryDownloadLog)
+class ItineraryDownloadLogAdmin(admin.ModelAdmin):
+    list_display = ('user', 'timestamp')
+    verbose_name = "Itinerary Download Log"
+    verbose_name_plural = "Itinerary Download Logs"
