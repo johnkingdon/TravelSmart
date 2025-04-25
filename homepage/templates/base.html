@@ -7,7 +7,7 @@
   {% load static %}
   <link rel="stylesheet" href="{% static 'main/style.css' %}?v=2">
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
   <div class="page-container">
     <header>
       <nav class="navbar">

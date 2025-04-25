@@ -233,13 +233,13 @@ html, body {
 .page-container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
+  overflow: visible;
 }
 
 .content-wrap {
-  flex: 1;
-  overflow: hidden;
+  flex: 1 0 auto;
+  overflow: visible;
 }
 
 /* ---------- Auth Pages ---------- */
@@ -247,8 +247,12 @@ html, body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: calc(100vh - 72px);
+  min-height: calc(100vh - 72px);
   padding: 2rem;
+}
+
+body.signup-page {
+  overflow: auto;
 }
 
 .auth-card, .form-card {
