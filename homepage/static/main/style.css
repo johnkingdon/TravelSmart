@@ -50,27 +50,6 @@ html, body {
   width: 36px;
 }
 
-/*.nav-links {*/
-/*  list-style: none;*/
-/*  display: flex;*/
-/*  gap: 1.25rem;*/
-/*}*/
-
-/*.nav-links a {*/
-/*  background: linear-gradient(to right, #4f46e5, #3b82f6);*/
-/*  color: white;*/
-/*  text-decoration: none;*/
-/*  font-weight: 600;*/
-/*  padding: 0.5rem 1.25rem;*/
-/*  border-radius: 999px;*/
-/*  transition: background 0.3s ease, transform 0.2s ease;*/
-/*}*/
-
-/*.nav-links a:hover {*/
-/*  background: linear-gradient(to right, #3b82f6, #2563eb);*/
-/*  transform: translateY(-1px);*/
-/*}*/
-
 .auth-buttons {
   display: flex;
   align-items: center;
