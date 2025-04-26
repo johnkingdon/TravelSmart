@@ -109,6 +109,7 @@ function clearRoute() {
   document.getElementById('clear-route-btn').classList.add('hidden');
   //document.getElementById('optimize-route-btn').classList.add('hidden');
   updateRouteButtonState()
+  localStorage.removeItem('ts_route_summary');
 }
 
 window.addEventListener('itineraryUpdated', () => {
@@ -308,15 +309,66 @@ function generateAndDisplayRoute(optimize = false) {
             const gasPrice = 3.5;
             const gasCost = (totalMiles / mpg) * gasPrice;
 
+            const totalDistanceMiles = totalMiles.toFixed(2);
+            const totalDurationMins = (totalTime / 60).toFixed(1);
+            const estimatedGasCost = gasCost.toFixed(2);
+
+
+
+            // compute raw avgPriceLevel (0–4)
+            const rawItin    = localStorage.getItem('ts_itinerary');
+            const itinItems  = rawItin ? JSON.parse(rawItin) : [];
+            let avgPriceLevel = 0;
+            if (itinItems.length > 0) {
+              const total = itinItems.reduce((sum, it) => sum + (it.price_level || 0), 0);
+              avgPriceLevel = total / itinItems.length;
+            }
+
+            // if “Free” (i.e. 0), force a minimum of 1
+            if (avgPriceLevel === 0) {
+              avgPriceLevel = 1;
+            }
+
+            // now build your 4‐span display exactly as before
+            const fullCount = Math.floor(avgPriceLevel);
+            const hasHalf   = (avgPriceLevel - fullCount) >= 0.5;
+
+            // Build our 4 dollar‐sign spans
+            let priceHtml = '';
+            for (let i = 1; i <= 4; i++) {
+              if (i <= fullCount) {
+                priceHtml += `<span class="dollar-sign filled">$</span>`;
+              }
+              else if (i === fullCount + 1 && hasHalf) {
+                priceHtml += `<span class="dollar-sign half">$</span>`;
+              }
+              else {
+                priceHtml += `<span class="dollar-sign">$</span>`;
+              }
+            }
+
+
+
             // Update summary box
             const infoBox = document.getElementById('route-info-box');
             infoBox.classList.remove('hidden');
             infoBox.innerHTML = `
-              <div class="title">Route Summary</div>
-              🚗 <strong>Distance:</strong> ${totalMiles.toFixed(2)} mi<br>
-              ⏱️ <strong>Time:</strong> ${(totalTime / 60).toFixed(1)} mins<br>
-              ⛽ <strong>Estimated Gas Cost:</strong> $${gasCost.toFixed(2)}
+              <div id="route-summary-box">
+                <div class="title">Route Summary</div>
+                🚗 <strong>Distance:</strong> ${totalDistanceMiles} mi<br>
+                ⏱️ <strong>Time:</strong> ${totalDurationMins} mins<br>
+                ⛽ <strong>Estimated Gas Cost:</strong> $${estimatedGasCost}<br>
+                💲 <strong>Average Price:</strong> ${priceHtml}
+              </div>
             `;
+
+            localStorage.setItem('ts_route_summary', JSON.stringify({
+              distance: `${totalDistanceMiles} mi`,
+              duration: `${totalDurationMins} mins`,
+              gasCost: `$${estimatedGasCost}`,
+              averagePrice: avgPriceSymbols,
+              waypointCount: itinerary.length
+            }));
 
             //document.getElementById('optimize-route-btn').classList.remove('hidden');
             updateRouteButtonState()

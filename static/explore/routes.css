@@ -140,3 +140,28 @@
   pointer-events: none;
   z-index: 9999;
 }
+
+
+
+.dollar-sign {
+  font-size: 1.1em;
+  color: #ccc;             /* light-gray “empty” state */
+  display: inline-block;
+  width: 1ch;              /* fix width so gradient lines up */
+  text-align: center;
+}
+.dollar-sign.filled {
+  color: #1a73e8;          /* your chosen “active” blue */
+  background: none;
+  -webkit-text-fill-color: currentColor;
+}
+.dollar-sign.half {
+  /* 50% blue / 50% gray clipped to text */
+  background: linear-gradient(
+    to right,
+    #1a73e8 50%,
+    #ccc     50%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
