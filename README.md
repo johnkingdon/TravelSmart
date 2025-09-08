@@ -12,10 +12,10 @@ Area-based trip planner: select a region (type an address or click the map), sur
 - **Random suggestions** on the home page
 - **Export itineraries to PDF**
 
-## Search Feature
+## 🔍 Search Destination Feature
 ![search_demo](https://github.com/user-attachments/assets/1eb13eb4-ee2a-4011-8557-bde17ac65974)
 
-## Optimize/Reorder Feature
+## 💲 Optimize/Reorder Route Feature
 ![optimize_demo](https://github.com/user-attachments/assets/cff5a8f8-139d-4fed-bee6-8d25a8b0407b)
 
 ## 🔧 Tech Stack
