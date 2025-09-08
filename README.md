@@ -3,8 +3,9 @@
 Area-based trip planner: select a region (type an address or click the map), surface nearby POIs with **reviews & prices**, and build a time/budget aware itinerary. Supports **drag-and-drop reordering** with **one-click route optimization** after you rearrange stops.
 
 ## 🔗 Links
-- Showcase website: [https://sites.google.com/view/travelsmartdemo?usp=sharing]
-- [![Watch the demo at 2:25](https://img.youtube.com/vi/zRYvnxVJbQg/hqdefault.jpg)](https://youtu.be/zRYvnxVJbQg?t=145)
+- Showcase website: https://sites.google.com/view/travelsmartdemo?usp=sharing
+- Watch the demo at 2:25
+- [![thumb](https://img.youtube.com/vi/zRYvnxVJbQg/hqdefault.jpg)](https://youtu.be/zRYvnxVJbQg?t=145) [Watch the demo at 2:25](https://youtu.be/zRYvnxVJbQg?t=145)
 
 ## 🔧 Tech Stack
 - **Django (frontend + backend)**
