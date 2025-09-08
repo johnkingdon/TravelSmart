@@ -7,9 +7,15 @@ Area-based trip planner: select a region (type an address or click the map), sur
 - Watch the demo at 2:25: https://youtu.be/zRYvnxVJbQg?t=145
 
 ## 🔧 Tech Stack
-- **Django (frontend + backend)**
-- Mapping: [Leaflet/Mapbox]
-- Routing: [Your provider/API]
+- **Backend:** Django 5 (monolith; built-in auth)
+- **Database:** SQLite (dev)
+- **Frontend:** Django templates + vanilla JS/CSS (`static/explore/*.js`, `*.css`)
+- **Maps & Places:** Google Maps JavaScript API
+  - Places: Autocomplete, Nearby Search, Place Details (ratings, reviews, price_level)
+  - Directions: route drawing with `optimizeWaypoints` (re-optimizes after you reorder)
+  - Geometry: polyline decoding (for mid-route labels)
+- **PDF Export:** html2pdf.js (html2canvas + jsPDF bundle)
+- **Email (password reset, etc.):** SMTP configured (Gmail) in `settings.py`
 
 ## ✅ Features
 - Type a destination **or** click anywhere to set the area
