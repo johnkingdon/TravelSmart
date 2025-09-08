@@ -4,8 +4,7 @@ Area-based trip planner: select a region (type an address or click the map), sur
 
 ## 🔗 Links
 - Showcase website: https://sites.google.com/view/travelsmartdemo?usp=sharing
-- Watch the demo at 2:25
-- [![thumb](https://img.youtube.com/vi/zRYvnxVJbQg/hqdefault.jpg)](https://youtu.be/zRYvnxVJbQg?t=145) [Watch the demo at 2:25](https://youtu.be/zRYvnxVJbQg?t=145)
+- Watch the demo at 2:25: https://youtu.be/zRYvnxVJbQg?t=145
 
 ## 🔧 Tech Stack
 - **Django (frontend + backend)**
